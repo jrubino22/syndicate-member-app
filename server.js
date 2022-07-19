@@ -8,8 +8,8 @@ const {verifyRequest} = require('@shopify/koa-shopify-auth');
 const { default: Shopify, ApiVersion } = require('@shopify/shopify-api');
 const Router = require('koa-router');
 const warrantiesRouter = require('./routes/Routes')
-const registeredProductModel = require('./models/registeredProductsModel')
-const serialNumberModel = require('./models/serialNumberModel')
+const registeredIdModel = require('./models/registeredIdModel')
+const unregisteredIdModel = require('./models/unregisteredIdModel')
 const bodyParser = require('koa-body')
 const cors = require('@koa/cors')
 
@@ -33,7 +33,7 @@ Shopify.Context.initialize({
 const port = (process.env.PORT || 5000);
 const dev = process.env.NODE_ENV !== 'production';
 const prod = process.env.NODE_ENV === 'production';
-const app = next({ prod });
+const app = next({ dev });
 const handle = app.getRequestHandler();
 
 const ACTIVE_SHOPIFY_SHOPS = {};
@@ -78,17 +78,19 @@ app.prepare().then(() => {
     router.get("/_next/webpack-hmr", handleRequest);
 
    
-    // get all warranties
-    router.get('(.*)/warranties', async (ctx) => {
-        ctx.body = await registeredProductModel.find()
+    // get all members
+    router.get('(.*)/members', async (ctx) => {
+        ctx.body = await registeredIdModel.find()
     })
 
-    // register a warranty
-    router.post('(.*)/register/:serial', bodyParser(), async (ctx) => {
-       const serialMatch = await serialNumberModel.find({serialNumber: ctx.params.serial});
-        if(serialMatch.length > 0) {
+    // register new membership
+    router.post('(.*)/register/:memberId', bodyParser(), async (ctx) => {
+       const idPrefix = ctx.params.memberId.substring(0, 4)
+       const idNumberMatch = await unregisteredIdModel.find({memberId: ctx.params.memberId});
+       let tier = ""
+        if(idNumberMatch.length > 0) {
             try { 
-                serialNumberModel.findOneAndDelete({ serialNumber: ctx.params.serial }, function (err, docs) {
+                unregisteredIdModel.findOneAndDelete({ memberId: ctx.params.memberId }, function (err, docs) {
                     if (err){
                         console.log(err)
                     }
@@ -96,6 +98,18 @@ app.prepare().then(() => {
                         console.log("Deleted serial number : ", docs);
                     }
                 });
+                if(idPrefix === "1658") {
+                    tier = "blue"         
+                }else if(idPrefix === "2409"){
+                    tier = "green"
+                }else if(idPrefix === "3945"){
+                    tier = "Gold"
+                }else if(idPrefix === "4679"){
+                    tier = "Black"
+                }else{
+                    console.error()
+                }
+
                 const registeredproduct = new registeredProductModel(ctx.request.body).save();
                 ctx.body = JSON.stringify(registeredproduct)
             } catch(err){
@@ -159,7 +173,8 @@ app.prepare().then(() => {
           response
         }, 5*60*1000);     
       }
-       keepAwake('https://v-syndicate-warranty-app.herokuapp.com')
+    
+    keepAwake('https://v-syndicate-warranty-app.herokuapp.com')
 
 
     server.use(router.allowedMethods());

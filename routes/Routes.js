@@ -1,6 +1,6 @@
 const Router = require('koa-router')
 const Koa = require('koa');
-const registeredProducts = require('../models/registeredProductsModel')
+const registeredProducts = require('../models/registeredIdModel')
 
 const warrantiesRouter = new Router()
 
