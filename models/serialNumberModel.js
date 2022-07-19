@@ -7,6 +7,6 @@ const unregisteredIdSchema = new mongoose.Schema({
     }
 })
 
-const serialNumberModel = mongoose.model("serial_numbers", serialNumberSchema);
+const unregisteredIdModel = mongoose.model("unregistered_ids", unregisteredIdSchema);
 
-module.exports = serialNumberModel
+module.exports = unregisteredIdModel

@@ -1,32 +1,20 @@
 const mongoose = require('mongoose')
 
-const registeredProductSchema = new mongoose.Schema({
+const registeredIdSchema = new mongoose.Schema({
     customerEmail: {
         type: String,
         required: true,
     },
-    serialNumber: {
+    cardTier: {
         type: String,
         required: true,
     },
-    product: {
+    accountNumber: {
         type: String,
         required: true,
     },
-    purchaseLocation: {
-        type: String,
-        required: true,
-    },
-    purchaseAddress: {
-        type: String,
-        required: true,
-    },
-    warrantyStatus: {
-        type: String,
-        required: true,
-    }
 })
 
-const registeredProductModel = mongoose.model("Registered Products", registeredProductSchema);
+const registeredIdModel = mongoose.model("registered_ids", registeredIdSchema);
 
-module.exports = registeredProductModel
+module.exports = registeredIdModel
