@@ -5,6 +5,10 @@ const registeredIdSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    shopifyCustomerId:{
+        type: String,
+        required: true
+    },
     cardTier: {
         type: String,
         required: true,

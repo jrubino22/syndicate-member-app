@@ -13,8 +13,6 @@ const unregisteredIdModel = require('./models/unregisteredIdModel')
 const bodyParser = require('koa-body')
 const cors = require('@koa/cors')
 
-const store = joeyskillsharedemo
-
 dotenv.config();
 
 mongoose.connect(process.env.MONGO_URL, () => {
@@ -31,6 +29,7 @@ Shopify.Context.initialize({
     SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
 
 });
+
 
 const port = (process.env.PORT || 5000);
 const dev = process.env.NODE_ENV !== 'production';
@@ -97,7 +96,7 @@ app.prepare().then(() => {
                         console.log(err)
                     }
                     else{
-                        console.log("Deleted serial number : ", docs);
+                        console.log("Deleted Unregistered ID number : ", docs);
                     }
                 });
                 if(idPrefix === "1658") {
@@ -112,19 +111,26 @@ app.prepare().then(() => {
                     console.error()
                 }
                 
-                let url = `https://${store}.myshopify.com/admin/api/2022-01/customers/${customer_id}.json`
+                // let url = `https://joeyskillsharedemo.myshopify.com/admin/api/2022-01/customers/6271323930877.json`
 
-                let json = {"customer": 
-                            {
-                            "id":"customer_id",
-                            "tags":tier
-                            }
-                        }
+                // let json = {"customer": 
+                //             {
+                //             "id":"customer_id",
+                //             "tags":tier
+                //             }
+                //         }
 
-                put(url=url, json=json)
-
-                const registeredproduct = new registeredProductModel(ctx.request.body).save();
-                ctx.body = JSON.stringify(registeredproduct)
+                // put(url=url, json=json)
+                console.log(ctx.request.body)
+                const newId = registeredIdModel.create({
+                    customerEmail: ctx.request.body.customerEmail,
+                    shopifyCustomerId: ctx.request.body.shopifyCustomerId,
+                    cardTier: tier,
+                    accountNumber: ctx.params.memberId
+                })
+                console.log(newId)
+                // const registeredId = new registeredIdModel(ctx.request.body).save();
+                ctx.body = JSON.stringify(newId)
             } catch(err){
                 error.message = "Invalid serial number"
                 console.log(error.message)
@@ -136,10 +142,10 @@ app.prepare().then(() => {
             }
     })
 
-    // post a serial number
-    router.post('(.*)/serial', bodyParser(), async (ctx) => {
-        try { const serialNumber = new serialNumberModel(ctx.request.body).save();
-         ctx.body = JSON.stringify(serialNumber)
+    // post a new unregistered Id
+    router.post('(.*)/memberId', bodyParser(), async (ctx) => {
+        try { const unregisteredId = new unregisteredIdModel(ctx.request.body).save();
+         ctx.body = JSON.stringify(unregisteredId)
         } catch(err){
           console.log(error)
         }
