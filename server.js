@@ -13,6 +13,8 @@ const unregisteredIdModel = require('./models/unregisteredIdModel')
 const bodyParser = require('koa-body')
 const cors = require('@koa/cors')
 
+const store = joeyskillsharedemo
+
 dotenv.config();
 
 mongoose.connect(process.env.MONGO_URL, () => {
@@ -109,6 +111,17 @@ app.prepare().then(() => {
                 }else{
                     console.error()
                 }
+                
+                let url = `https://${store}.myshopify.com/admin/api/2022-01/customers/${customer_id}.json`
+
+                let json = {"customer": 
+                            {
+                            "id":"customer_id",
+                            "tags":tier
+                            }
+                        }
+
+                put(url=url, json=json)
 
                 const registeredproduct = new registeredProductModel(ctx.request.body).save();
                 ctx.body = JSON.stringify(registeredproduct)
