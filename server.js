@@ -3,8 +3,8 @@ const dotenv = require('dotenv')
 const Koa = require('koa')
 const mongoose = require('mongoose')
 const next = require('next')
-const {default: createShopifyAuth} = require('@shopify/koa-shopify-auth');
-const {verifyRequest} = require('@shopify/koa-shopify-auth');
+const { default: createShopifyAuth } = require('@shopify/koa-shopify-auth');
+const { verifyRequest } = require('@shopify/koa-shopify-auth');
 const { default: Shopify, ApiVersion } = require('@shopify/shopify-api');
 const Router = require('koa-router');
 const warrantiesRouter = require('./routes/Routes')
@@ -48,14 +48,14 @@ app.prepare().then(() => {
     server.use(
         createShopifyAuth({
             afterAuth(ctx) {
-                const {shop, scope} = ctx.state.shopify;
+                const { shop, scope } = ctx.state.shopify;
                 ACTIVE_SHOPIFY_SHOPS[shop] = scope;
 
-                if( ACTIVE_SHOPIFY_SHOPS[shop]) {
+                if (ACTIVE_SHOPIFY_SHOPS[shop]) {
                     ctx.redirect(`https://${shop}/admin/apps`)
-                }else{
+                } else {
                     ctx.redirect(`/?shop=${shop}`);
-                }             
+                }
             },
         }),
     );
@@ -78,7 +78,7 @@ app.prepare().then(() => {
     router.get("(/_next/static/.*)", handleRequest);
     router.get("/_next/webpack-hmr", handleRequest);
 
-   
+
     // get all members
     router.get('(.*)/members', async (ctx) => {
         ctx.body = await registeredIdModel.find()
@@ -86,69 +86,63 @@ app.prepare().then(() => {
 
     // register new membership
     router.post('(.*)/register/:memberId', bodyParser(), async (ctx) => {
-       const idPrefix = ctx.params.memberId.substring(0, 4)
-       const idNumberMatch = await unregisteredIdModel.find({memberId: ctx.params.memberId});
-       let tier = ""
-        if(idNumberMatch.length > 0) {
-            try { 
+        const idPrefix = ctx.params.memberId.substring(0, 4)
+        const idNumberMatch = await unregisteredIdModel.find({ memberId: ctx.params.memberId });
+        let tier = ""
+        if (idNumberMatch.length > 0) {
+            try {
                 unregisteredIdModel.findOneAndDelete({ memberId: ctx.params.memberId }, function (err, docs) {
-                    if (err){
+                    if (err) {
                         console.log(err)
                     }
-                    else{
+                    else {
                         console.log("Deleted Unregistered ID number : ", docs);
                     }
                 });
-                if(idPrefix === "1658") {
-                    tier = "blue"         
-                }else if(idPrefix === "2409"){
+                if (idPrefix === "1658") {
+                    tier = "blue"
+                } else if (idPrefix === "2409") {
                     tier = "green"
-                }else if(idPrefix === "3945"){
+                } else if (idPrefix === "3945") {
                     tier = "Gold"
-                }else if(idPrefix === "4679"){
+                } else if (idPrefix === "4679") {
                     tier = "Black"
-                }else{
+                } else {
                     console.error()
                 }
+
+                let thisUrl = `https://${shopifyStore}.myshopify.com/admin/api/2022-07/customers/${ctx.request.body.shopifyCustomerId}.json`
+
+                getResponse = await fetch(thisUrl, {
+                    method: 'GET',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Shopify-Access-Token': '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'
+                    }
+                }
+                );
+                const getData = await getResponse.json();
+                console.log(getData.customer.tags)
+                const newCustomerTags = getData.customer.tags.concat(`, ${tier}`);
+                console.log(newCustomerTags)
                 
-                let thisUrl = await `https://${shopifyStore}.myshopify.com/admin/api/2022-01/customers/${ctx.request.body.shopifyCustomerId}.json`
-
-                // async() fetch(thisUrl, {
-                //     method: "put",
-                //     headers: {
-                //         'Content-Type': 'application/json',
-                //         'X-Shopify-Access-Token': 'febe5d321e26f855a2a279c0a3fd5a4b-1658422119'
-                //     },
-                //     body: JSON.stringify(
-                //         {"customer": 
-                //             {
-                //             "id": ctx.request.body.shopifyCustomerId,
-                //             "tags": tier
-                //             }
-                //         }
-                //     )
-                // }).catch(function() {
-                //     console.error()
-                // })
-
-                // (async () => {
-                    // PUT request using fetch with async/await
-                    const requestOptions = {
-                                                method: 'PUT',
-                                                headers: { 
-                                                            'Content-Type': 'application/json', 
-                                                            'X-Shopify-Access-Token': 'cfdf5e809a9f789ff0d833ed320e8e6a-1658426302'
-                                                        },
-                                                body: JSON.stringify({ "customer": 
-                                                                        {
-                                                                        "id": ctx.request.body.shopifyCustomerId,
-                                                                        "tags": tier
-                                                                        } 
-                                                                    })
-                                                };
-                    const response = await fetch(thisUrl, requestOptions);
-                    const data = await response.json();
-                    console.log(data)
+                const requestOptions = {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Shopify-Access-Token': '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'
+                    },
+                    body: JSON.stringify({
+                        "customer":
+                        {
+                            "id": ctx.request.body.shopifyCustomerId,
+                            "tags": newCustomerTags
+                        }
+                    })
+                };
+                const response = await fetch(thisUrl, requestOptions);
+                const data = await response.json();
+                console.log(data)
                 // })();
 
                 const newId = await registeredIdModel.create({
@@ -160,68 +154,70 @@ app.prepare().then(() => {
                 console.log(newId)
                 // const registeredId = new registeredIdModel(ctx.request.body).save();
                 ctx.body = JSON.stringify(newId)
-            } catch(err){
+            } catch (err) {
                 error.message = "Invalid serial number"
                 console.log(error.message)
             }
-        } else try { 
+        } else try {
             error.message = "Invalid serial number"
-            } catch(err){
+        } catch (err) {
             console.log(error)
-            }
+        }
     })
 
     // post a new unregistered Id
     router.post('(.*)/memberId', bodyParser(), async (ctx) => {
-        try { const unregisteredId = new unregisteredIdModel(ctx.request.body).save();
-         ctx.body = JSON.stringify(unregisteredId)
-        } catch(err){
-          console.log(error)
+        try {
+            const unregisteredId = new unregisteredIdModel(ctx.request.body).save();
+            ctx.body = JSON.stringify(unregisteredId)
+        } catch (err) {
+            console.log(error)
         }
-      })
+    })
 
     // get all warranties for a single customer
     router.get('(.*)/warranties/:email', async (ctx) => {
         try {
-            const productreg = await registeredProductModel.find({customerEmail: ctx.params.email});
+            const productreg = await registeredProductModel.find({ customerEmail: ctx.params.email });
             if (!productreg) {
                 ctx.throw(404);
             }
             ctx.body = productreg;
-            } catch (err) {
+        } catch (err) {
             if (err.name === 'CastError' || err.name === 'NotFoundError') {
                 ctx.throw(404);
             }
             ctx.throw(500);
-            }
-        })
+        }
+    })
 
     // get a single warranty by id
     router.get('(.*)/warranty/:id', async (ctx) => {
-           ctx.body = await registeredProductModel.findById(ctx.params.id)      
+        ctx.body = await registeredProductModel.findById(ctx.params.id)
     })
 
     // update warranty status
     router.put('(.*)/warranty/:id', async (ctx) => {
-        ctx.body = await registeredProductModel.findByIdAndUpdate(ctx.params.id, 
-           { warrantyStatus: "inactive" })   
+        ctx.body = await registeredProductModel.findByIdAndUpdate(ctx.params.id,
+            { warrantyStatus: "inactive" })
     })
-    
-    router.post('(.*)/warranties', bodyParser(), async (ctx) => { 
-        try { const registeredproduct = new registeredProductModel(ctx.request.body).save();
-       ctx.body = JSON.stringify(registeredproduct)
-      } catch(err){
-        console.log(error)
-      }
+
+    router.post('(.*)/warranties', bodyParser(), async (ctx) => {
+        try {
+            const registeredproduct = new registeredProductModel(ctx.request.body).save();
+            ctx.body = JSON.stringify(registeredproduct)
+        } catch (err) {
+            console.log(error)
+        }
     })
     //keep dynos running
-    function keepAwake(url){
-        setInterval(async function(){
-          const response = await fetch(url);
-          response
-        }, 5*60*1000);     
-      }
-    
+    function keepAwake(url) {
+        setInterval(async function () {
+            const response = await fetch(url);
+            response
+        }, 5 * 60 * 1000);
+    }
+
     keepAwake('https://v-syndicate-warranty-app.herokuapp.com')
 
 
