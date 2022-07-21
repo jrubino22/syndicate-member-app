@@ -30,7 +30,7 @@ Shopify.Context.initialize({
 
 });
 
-
+const shopifyStore = "joeyskillsharedemo"
 const port = (process.env.PORT || 5000);
 const dev = process.env.NODE_ENV !== 'production';
 const prod = process.env.NODE_ENV === 'production';
@@ -111,18 +111,47 @@ app.prepare().then(() => {
                     console.error()
                 }
                 
-                // let url = `https://joeyskillsharedemo.myshopify.com/admin/api/2022-01/customers/6271323930877.json`
+                let thisUrl = await `https://${shopifyStore}.myshopify.com/admin/api/2022-01/customers/${ctx.request.body.shopifyCustomerId}.json`
 
-                // let json = {"customer": 
+                // async() fetch(thisUrl, {
+                //     method: "put",
+                //     headers: {
+                //         'Content-Type': 'application/json',
+                //         'X-Shopify-Access-Token': 'febe5d321e26f855a2a279c0a3fd5a4b-1658422119'
+                //     },
+                //     body: JSON.stringify(
+                //         {"customer": 
                 //             {
-                //             "id":"customer_id",
-                //             "tags":tier
+                //             "id": ctx.request.body.shopifyCustomerId,
+                //             "tags": tier
                 //             }
                 //         }
+                //     )
+                // }).catch(function() {
+                //     console.error()
+                // })
 
-                // put(url=url, json=json)
-                console.log(ctx.request.body)
-                const newId = registeredIdModel.create({
+                // (async () => {
+                    // PUT request using fetch with async/await
+                    const requestOptions = {
+                                                method: 'PUT',
+                                                headers: { 
+                                                            'Content-Type': 'application/json', 
+                                                            'X-Shopify-Access-Token': 'cfdf5e809a9f789ff0d833ed320e8e6a-1658426302'
+                                                        },
+                                                body: JSON.stringify({ "customer": 
+                                                                        {
+                                                                        "id": ctx.request.body.shopifyCustomerId,
+                                                                        "tags": tier
+                                                                        } 
+                                                                    })
+                                                };
+                    const response = await fetch(thisUrl, requestOptions);
+                    const data = await response.json();
+                    console.log(data)
+                // })();
+
+                const newId = await registeredIdModel.create({
                     customerEmail: ctx.request.body.customerEmail,
                     shopifyCustomerId: ctx.request.body.shopifyCustomerId,
                     cardTier: tier,
