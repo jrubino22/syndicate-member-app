@@ -152,14 +152,13 @@ app.prepare().then(() => {
                     accountNumber: ctx.params.memberId
                 })
                 console.log(newId)
-                // const registeredId = new registeredIdModel(ctx.request.body).save();
                 ctx.body = JSON.stringify(newId)
             } catch (err) {
-                error.message = "Invalid serial number"
+                error.message = "Invalid account number"
                 console.log(error.message)
             }
         } else try {
-            error.message = "Invalid serial number"
+            error.message = "Invalid account number"
         } catch (err) {
             console.log(error)
         }
@@ -217,8 +216,6 @@ app.prepare().then(() => {
             response
         }, 5 * 60 * 1000);
     }
-
-    keepAwake('https://v-syndicate-warranty-app.herokuapp.com')
 
 
     server.use(router.allowedMethods());
