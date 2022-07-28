@@ -12,6 +12,7 @@ const registeredIdModel = require('./models/registeredIdModel')
 const unregisteredIdModel = require('./models/unregisteredIdModel')
 const bodyParser = require('koa-body')
 const cors = require('@koa/cors')
+const google_cal = require('./google_calendar')
 
 dotenv.config();
 
@@ -143,7 +144,6 @@ app.prepare().then(() => {
                 const response = await fetch(thisUrl, requestOptions);
                 const data = await response.json();
                 console.log(data)
-                // })();
 
                 const newId = await registeredIdModel.create({
                     customerEmail: ctx.request.body.customerEmail,
@@ -153,6 +153,13 @@ app.prepare().then(() => {
                 })
                 console.log(newId)
                 ctx.body = JSON.stringify(newId)
+                        google_cal.insertEvent(ctx.request.body.customerEmail)
+                            .then((res) => {
+                                console.log(res);
+                            })
+                            .catch((err) => {
+                                console.log(err);
+                            });
             } catch (err) {
                 error.message = "Invalid account number"
                 console.log(error.message)

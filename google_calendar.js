@@ -17,7 +17,7 @@ const auth = new google.auth.JWT(
 );
 
 // Your TIMEOFFSET Offset
-const TIMEOFFSET = '+05:30';
+const TIMEOFFSET = '-07:00';
 
 // Get date-time string for calender
 const dateTimeForCalander = () => {
@@ -26,10 +26,20 @@ const dateTimeForCalander = () => {
 
     let year = date.getFullYear();
     let month = date.getMonth() + 1;
+    if(month === 13){
+    month = 1
+    year = date.getFullYear() +1
+    }else if(month === 14){
+    month = 2
+    year = date.getFullYear() +1
+    }else if(month === 15){
+    month = 3
+    year = date.getFullYear() +1
+    }
     if (month < 10) {
         month = `0${month}`;
     }
-    let day = date.getDate();
+    let day = date.getDate() ;
     if (day < 10) {
         day = `0${day}`;
     }
@@ -46,9 +56,11 @@ const dateTimeForCalander = () => {
 
     let event = new Date(Date.parse(newDateTime));
 
-    let startDate = event;
+    let ninetyday = new Date(event.getFullYear(),event.getMonth(),event.getDate()+90);
+
+    let startDate = ninetyday;
     // Delay in end time is 1
-    let endDate = new Date(new Date(startDate).setHours(startDate.getHours()+1));
+    let endDate = new Date(new Date(startDate).setHours(startDate.getHours()+.1));
 
     return {
         'start': startDate,
@@ -57,8 +69,26 @@ const dateTimeForCalander = () => {
 };
 
 // Insert new event to Google Calendar
-const insertEvent = async (event) => {
+const insertEvent = async (customerEmail) => {
 
+    let dateTime = dateTimeForCalander();
+
+    let event = {
+        'summary': `Audit for ${customerEmail}.`,
+        'description': `Check activity from the member with email: ${customerEmail}`,
+        'start': {
+            'dateTime': dateTime['start'],
+            'timeZone': 'America/Los_Angeles'
+        },
+        'end': {
+            'dateTime': dateTime['end'],
+            'timeZone': 'America/Los_Angeles'
+        },
+        'recurrence': [
+        'RRULE:FREQ=DAILY;INTERVAL=90;COUNT=20'
+        ]
+    };
+    console.log(dateTime)
     try {
         let response = await calendar.events.insert({
             auth: auth,
@@ -77,49 +107,38 @@ const insertEvent = async (event) => {
     }
 };
 
-let dateTime = dateTimeForCalander();
+
 
 // // Event for Google Calendar
-let event = {
-    'summary': `This is the summary.`,
-    'description': `This is the description.`,
-    'start': {
-        'dateTime': dateTime['start'],
-        'timeZone': 'Asia/Kolkata'
-    },
-    'end': {
-        'dateTime': dateTime['end'],
-        'timeZone': 'Asia/Kolkata'
-    }
-};
 
-insertEvent(event)
-    .then((res) => {
-        console.log(res);
-    })
-    .catch((err) => {
-        console.log(err);
-    });
+
+// insertEvent(event)
+//     .then((res) => {
+//         console.log(res);
+//     })
+//     .catch((err) => {
+//         console.log(err);
+//     });
 
 // Get all the events between two dates
-const getEvents = async (dateTimeStart, dateTimeEnd) => {
+// const getEvents = async (dateTimeStart, dateTimeEnd) => {
 
-    try {
-        let response = await calendar.events.list({
-            auth: auth,
-            calendarId: calendarId,
-            timeMin: dateTimeStart,
-            timeMax: dateTimeEnd,
-            timeZone: 'Asia/Kolkata'
-        });
+//     try {
+//         let response = await calendar.events.list({
+//             auth: auth,
+//             calendarId: calendarId,
+//             timeMin: dateTimeStart,
+//             timeMax: dateTimeEnd,
+//             timeZone: 'Asia/Kolkata'
+//         });
     
-        let items = response['data']['items'];
-        return items;
-    } catch (error) {
-        console.log(`Error at getEvents --> ${error}`);
-        return 0;
-    }
-};
+//         let items = response['data']['items'];
+//         return items;
+//     } catch (error) {
+//         console.log(`Error at getEvents --> ${error}`);
+//         return 0;
+//     }
+// };
 
 // let start = '2020-10-03T00:00:00.000Z';
 // let end = '2020-10-04T00:00:00.000Z';
@@ -133,32 +152,34 @@ const getEvents = async (dateTimeStart, dateTimeEnd) => {
 //     });
 
 // Delete an event from eventID
-const deleteEvent = async (eventId) => {
+// const deleteEvent = async (eventId) => {
 
-    try {
-        let response = await calendar.events.delete({
-            auth: auth,
-            calendarId: calendarId,
-            eventId: eventId
-        });
+//     try {
+//         let response = await calendar.events.delete({
+//             auth: auth,
+//             calendarId: calendarId,
+//             eventId: eventId
+//         });
 
-        if (response.data === '') {
-            return 1;
-        } else {
-            return 0;
-        }
-    } catch (error) {
-        console.log(`Error at deleteEvent --> ${error}`);
-        return 0;
-    }
-};
+//         if (response.data === '') {
+//             return 1;
+//         } else {
+//             return 0;
+//         }
+//     } catch (error) {
+//         console.log(`Error at deleteEvent --> ${error}`);
+//         return 0;
+//     }
+// };
 
-let eventId = 'hkkdmeseuhhpagc862rfg6nvq4';
+// let eventId = 'hkkdmeseuhhpagc862rfg6nvq4';
 
-deleteEvent(eventId)
-    .then((res) => {
-        console.log(res);
-    })
-    .catch((err) => {
-        console.log(err);
-    });
+// deleteEvent(eventId)
+//     .then((res) => {
+//         console.log(res);
+//     })
+//     .catch((err) => {
+//         console.log(err);
+//     });
+
+module.exports = { insertEvent }
