@@ -85,6 +85,22 @@ app.prepare().then(() => {
         ctx.body = await registeredIdModel.find()
     })
 
+    // get a single membership by account number
+    router.get('/api/member/:memberNum', async (ctx) => {
+        try {
+            const memberNum = await registeredIdModel.find({ accountNumber: ctx.params.memberNum });
+            if (!memberNum) {
+                ctx.throw(404);
+            }
+            ctx.body = memberNum;
+        } catch (err) {
+            if (err.name === 'CastError' || err.name === 'NotFoundError') {
+                ctx.throw(404);
+            }
+            ctx.throw(500);
+        }
+    })
+
     // register new membership
     router.post('api/register/:memberId', bodyParser(), async (ctx) => {
         const idPrefix = ctx.params.memberId.substring(0, 4)
@@ -197,10 +213,6 @@ app.prepare().then(() => {
         }
     })
 
-    // get a single warranty by id
-    router.get('(.*)/warranty/:id', async (ctx) => {
-        ctx.body = await registeredProductModel.findById(ctx.params.id)
-    })
 
     // update warranty status
     router.put('(.*)/warranty/:id', async (ctx) => {
