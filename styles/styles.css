@@ -1,0 +1,11 @@
+.border {
+    border-style: solid;
+    border-color: darkmagenta;
+    margin: 5px;
+    padding: 10px
+}
+
+.editButton {
+    margin-left: auto;
+   margin-right:auto;
+}

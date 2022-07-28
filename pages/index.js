@@ -1,22 +1,23 @@
-import "./styles.css";
+import Link from 'next/link'
 
 const Index = ({member}) => {
 
+
     return(
    member.map(({customerEmail, cardTier, accountNumber}) => (
-        <span border>
+        <div className="border">
         <p>  
             <span> Customer Email: {customerEmail} </span>
             |<span> Membership Tier: {cardTier} </span>
             |<span> Account Number: {accountNumber} </span>         
-            <button id="wb">Make Edit</button>
+            <Link href={`/view-member/${customerEmail}`} className="editButton"><button className="editButton">Make Edit</button></Link>
         </p> 
-        </span>
+        </div>
     )))
 }
 
 export async function getServerSideProps(){
-    const response = await fetch('http://localhost:5000/members')
+    const response = await fetch('http://localhost:5000/api/members')
     const data = await response.json()
 
     return {

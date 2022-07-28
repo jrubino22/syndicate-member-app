@@ -74,19 +74,19 @@ app.prepare().then(() => {
         await handleRequest(ctx);
     })
 
-    // router.get('(.*)', handleRequest);
+    
 
     router.get("(/_next/static/.*)", handleRequest);
     router.get("/_next/webpack-hmr", handleRequest);
 
 
     // get all members
-    router.get('(.*)/members', async (ctx) => {
+    router.get('/api/members', async (ctx) => {
         ctx.body = await registeredIdModel.find()
     })
 
     // register new membership
-    router.post('(.*)/register/:memberId', bodyParser(), async (ctx) => {
+    router.post('api/register/:memberId', bodyParser(), async (ctx) => {
         const idPrefix = ctx.params.memberId.substring(0, 4)
         const idNumberMatch = await unregisteredIdModel.find({ memberId: ctx.params.memberId });
         let tier = ""
@@ -172,7 +172,7 @@ app.prepare().then(() => {
     })
 
     // post a new unregistered Id
-    router.post('(.*)/memberId', bodyParser(), async (ctx) => {
+    router.post('api/memberId', bodyParser(), async (ctx) => {
         try {
             const unregisteredId = new unregisteredIdModel(ctx.request.body).save();
             ctx.body = JSON.stringify(unregisteredId)
@@ -224,7 +224,7 @@ app.prepare().then(() => {
         }, 5 * 60 * 1000);
     }
 
-
+    router.get('(.*)', handleRequest);
     server.use(router.allowedMethods());
     server.use(router.routes());
 
