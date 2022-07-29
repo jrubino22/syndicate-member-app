@@ -17,6 +17,10 @@ const registeredIdSchema = new mongoose.Schema({
         type: String,
         required: true,
     },
+    notes: {
+        type: String,
+        required: false,
+    }
 })
 
 const registeredIdModel = mongoose.model("registered_ids", registeredIdSchema);

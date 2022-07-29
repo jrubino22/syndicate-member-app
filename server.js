@@ -117,9 +117,9 @@ app.prepare().then(() => {
                     }
                 });
                 if (idPrefix === "1658") {
-                    tier = "blue"
+                    tier = "Blue"
                 } else if (idPrefix === "2409") {
-                    tier = "green"
+                    tier = "Green"
                 } else if (idPrefix === "3945") {
                     tier = "Gold"
                 } else if (idPrefix === "4679") {

@@ -11,14 +11,14 @@ const Index = ({member}) => {
 //     );
 // }
     return(
-   member.map(({customerEmail, cardTier, accountNumber}) => (
-        <div className="border">
+   member.map(({_Id, customerEmail, cardTier, accountNumber}) => (
+        <div key={_Id} className="border">
         <p>  
-            <span> Customer Email: {customerEmail} </span>
-            |<span> Membership Tier: {cardTier} </span>
-            |<span> Account Number: {accountNumber} </span>         
-            <Link href={`/view-member/${accountNumber}`} className="editButton">
-                <button className="editButton">Make Edit</button>
+            <span key={customerEmail}> Customer Email: {customerEmail} </span>
+            |<span key={cardTier}> Membership Tier: {cardTier} </span>
+            |<span key={accountNumber}> Account Number: {accountNumber} </span>         
+            <Link key={_Id} href={`/view-member/${accountNumber}`} className="editButton">
+                <button className="editButton">View Member</button>
                 </Link>
         </p> 
         </div>

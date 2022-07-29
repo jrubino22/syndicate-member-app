@@ -12,3 +12,17 @@
     float: right;
     margin-right: 10px;
 }
+
+.bold {
+    font-weight: bold;
+}
+
+.memberForm {
+    border-style: solid;
+    border-color: darkmagenta;
+    text-align: center;
+    margin-top: 20px;
+    margin-right: auto;
+    margin-left: auto;
+    max-width: 600px;
+}
