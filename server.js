@@ -100,9 +100,25 @@ app.prepare().then(() => {
             ctx.throw(500);
         }
     })
+    //update a single member
+    router.put('/api/update/:memberId', bodyParser(), async (ctx) => {
+        // const idNumber = await registeredIdModel.find({ accountNumber: ctx.params.memberId });
+        const update =
+            { 
+                cardTier: ctx.request.body.cardTier,
+                notes: ctx.request.body.notes,            
+            }
+        try {
+            const updatedId = await registeredIdModel.findOneAndUpdate({accountNumber: ctx.params.memberId}, update);
+            console.log(updatedId)
+            ctx.body = JSON.stringify(updatedId)
+        } catch (err) {
+            console.log(err.name)
+        }
+    })
 
     // register new membership
-    router.post('api/register/:memberId', bodyParser(), async (ctx) => {
+    router.post('/api/register/:memberId', bodyParser(), async (ctx) => {
         const idPrefix = ctx.params.memberId.substring(0, 4)
         const idNumberMatch = await unregisteredIdModel.find({ memberId: ctx.params.memberId });
         let tier = ""
@@ -188,7 +204,7 @@ app.prepare().then(() => {
     })
 
     // post a new unregistered Id
-    router.post('api/memberId', bodyParser(), async (ctx) => {
+    router.post('/api/memberId', bodyParser(), async (ctx) => {
         try {
             const unregisteredId = new unregisteredIdModel(ctx.request.body).save();
             ctx.body = JSON.stringify(unregisteredId)

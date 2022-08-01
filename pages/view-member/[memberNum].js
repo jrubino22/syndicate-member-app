@@ -1,52 +1,105 @@
-
 import * as React from 'react'
+import Link from 'next/link'
 
 const MemberPage = ({member}) => {
+    
+    const urlParam = member[0].accountNumber
 
-    const options = [
+    const options =
+      [
+        {value: member[0].cardTier, text: member[0].cardTier },
         {value: 'Blue', text: 'Blue'},
         {value: 'Green', text: 'Green'},
         {value: 'Gold', text: 'Gold'},
         {value: 'Black', text: 'Black'},
-      ];
-
+      ]
+    
     const [selected, setSelected] = React.useState(options[0].value)
+    const [newNotes, setNotes] = React.useState(member[0].notes)
+    
+    console.log(newNotes)
+      console.log(urlParam)
 
-    const handleChange = (event) => {
-        console.log(event.target.value)
+    const handleTierChange = (event) => {      
         setSelected(event.target.value);
+        console.log(selected)
       };
 
+    const handleNotesChange = (event) => {       
+        setNotes(event.target.value)
+        console.log(newNotes)
+    }
+
+      async function handleFormSubmit() {
+        const thisUrl = `http://localhost:5000/api/update/${urlParam}`
+
+        try{
+            console.log(thisUrl)
+            await postFormDataAsJson({thisUrl})
+            // alert('changes have been saved')
+        }catch(error) {
+            console.log(error)
+        }
+    }
+
+        async function postFormDataAsJson() {
+            const formDataJsonString = JSON.stringify({
+                cardTier: selected,
+                notes: newNotes
+            });
+            const fetchOptions = {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    "Accept": "application/json"
+                },
+                body: formDataJsonString,
+            };
+            const response = await fetch(`http://localhost:5000/api/update/${member[0].accountNumber}`, fetchOptions);
+
+            if (!response.ok) {
+                console.log('error in fetch')
+                const errorMessage = await response.text();
+                throw new Error(errorMessage);
+            }
+            alert("your changes have been saved")             
+            return response.json()  
+        }
     return(
     
-        member.map(({customerEmail, cardTier, accountNumber}) => (
+        member.map(({customerEmail, cardTier, accountNumber, notes}) => (
             <>
+                <Link href={`/`}>
+                <button className="backButton">Back</button>
+                </Link>
                 <div className="border">
-                <p>  
+                <p className="memberPageHeader">  
                     <span><span key={customerEmail} className="bold">Customer Email:</span> {customerEmail} </span>
                     <span><span key={accountNumber} className="bold">| Account Number:</span> {accountNumber} </span>
-                    <span><span key={cardTier} className="bold">| Current Membership Tier:</span> {cardTier} </span>
+                    <span><span key="cardTier" className="bold">| Current Membership Tier:</span> {cardTier} </span>
                 </p>
                 </div>   
-                <div className="memberForm">
+                <div key="form" className="formDiv">
                     <h3>Edit Member</h3>
-                    <form> 
-                    <span>
+                    <form className="memberForm" onSubmit={() => handleFormSubmit()}> 
                         <label>
                             Membership Tier:  
-                            <select className="tierSelect" Style="margin-left: 5px" value={selected} onChange={handleChange}>
+                            <select name="tierSelect" className="tierSelect" value={selected} onChange={handleTierChange}>
                                 {options.map(option => (
                                     <option key={option.value} value={option.value}>
                                         {option.text}
                                     </option>
                                 ))}
                             </select>
-                        </label> </span>
+                        </label> <br></br>
+                        <label>Member Notes: <br></br>
+                            <textarea name="memberNotes" className="notesTa" defaultValue={notes} value={newNotes} onChange={handleNotesChange}></textarea>
+                        </label>
+                        <input type="submit" value="Save Changes"></input>
                     </form>        
-                    {/* <Link href={`/view-member/${accountNumber}`} className="editButton"><button className="editButton">Save</button></Link> */}
                 </div>                     
             </>      
-        )))        
+        )))       
 }
 
 export async function getServerSideProps(props){

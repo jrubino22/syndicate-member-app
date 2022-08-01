@@ -17,7 +17,11 @@
     font-weight: bold;
 }
 
-.memberForm {
+.memberPageHeader{
+    font-size: 18px;
+}
+
+.formDiv {
     border-style: solid;
     border-color: darkmagenta;
     text-align: center;
@@ -25,4 +29,18 @@
     margin-right: auto;
     margin-left: auto;
     max-width: 600px;
+}
+
+.notesTa {
+    height: 500px;
+    width: 500px;
+    margin-bottom: 30px;
+}
+
+.tierSelect {
+    margin-bottom: 20px;
+}
+
+.backButton {
+    float: left;
 }
