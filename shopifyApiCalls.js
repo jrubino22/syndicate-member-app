@@ -17,27 +17,72 @@ const replaceCustomerTags = async (shopifyStore, shopifyCustomerId, newCardTier)
     const oldOnes = getData.customer.tags.split(", ")
     console.log(oldOnes)
 
-    let tagIndex
+    let colorTagIndex
     if (oldOnes.indexOf('Blue') > -1) {
-        tagIndex = oldOnes.indexOf('Blue');
+        colorTagIndex = oldOnes.indexOf('Blue');
     } else if (oldOnes.indexOf('Green') > -1) {
-        tagIndex = oldOnes.indexOf('Green');
+        colorTagIndex = oldOnes.indexOf('Green');
     } else if (oldOnes.indexOf('Gold') > -1) {
-        tagIndex = oldOnes.indexOf('Gold');
+        colorTagIndex = oldOnes.indexOf('Gold');
     } else if (oldOnes.indexOf('Black') > -1) {
-        tagIndex = oldOnes.indexOf('Black');
-    } else { tagIndex = 1 }
+        colorTagIndex = oldOnes.indexOf('Black');
+    } else { colorTagIndex = 1 }
 
-    console.log(tagIndex)
+    console.log(colorTagIndex)
 
-    if (tagIndex > -1) {
-        oldOnes.splice(tagIndex, 1)
-    }
+    if (colorTagIndex > -1) {
+        oldOnes.splice(colorTagIndex, 1)
+    }    
 
     console.log(oldOnes)
 
-    const newCustomerTags = oldOnes.concat(`${newCardTier}`);
+    let typeTagIndex = -1
+    let newTypeTag = '';
+    if (newCardTier === "Blue" || newCardTier === "Green") {
+        if (oldOnes.indexOf("distributor") > -1) {
+            typeTagIndex = oldOnes.indexOf("distributor");
+            newTypeTag = "retail"
+        }
+        if (oldOnes.indexOf("master-distributor") > -1) {
+            typeTagIndex = oldOnes.indexOf("master-distributor");
+            newTypeTag = "retail"
+        }
+    }
+    if (newCardTier === "Gold") {
+        if (oldOnes.indexOf("retail") > -1) {
+            typeTagIndex = oldOnes.indexOf("retail");
+            newTypeTag = "distributor"
+        }
+        if (oldOnes.indexOf("master-distributor") > -1) {
+            typeTagIndex = oldOnes.indexOf("master-distributor");
+            newTypeTag = "distributor"
+        }
+    }
+    if (newCardTier === "Black") {
+        if (oldOnes.indexOf("retail") > -1) {
+            typeTagIndex = oldOnes.indexOf("retail");
+            newTypeTag = "master-distributor"
+        }
+        if (oldOnes.indexOf("distributor") > -1) {
+            typeTagIndex = oldOnes.indexOf("distributor");
+            newTypeTag = "master-distributor"
+        }
+    }
+
+    console.log(typeTagIndex)
+    console.log(newTypeTag)
+
+    let newCustomerTags
+    if (typeTagIndex > -1) {
+        oldOnes.splice(typeTagIndex, 1)
+        oldOnes.push(newTypeTag)
+    }
+
+    
+    newCustomerTags = oldOnes.concat(`${newCardTier}`);
     console.log(newCustomerTags)
+
+    
 
 
     const requestOptions = {
