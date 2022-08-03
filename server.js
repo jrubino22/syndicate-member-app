@@ -7,12 +7,14 @@ const { default: createShopifyAuth } = require('@shopify/koa-shopify-auth');
 const { verifyRequest } = require('@shopify/koa-shopify-auth');
 const { default: Shopify, ApiVersion } = require('@shopify/shopify-api');
 const Router = require('koa-router');
-const warrantiesRouter = require('./routes/Routes')
-const registeredIdModel = require('./models/registeredIdModel')
-const unregisteredIdModel = require('./models/unregisteredIdModel')
-const bodyParser = require('koa-body')
-const cors = require('@koa/cors')
-const google_cal = require('./google_calendar')
+const warrantiesRouter = require('./routes/Routes');
+const registeredIdModel = require('./models/registeredIdModel');
+const unregisteredIdModel = require('./models/unregisteredIdModel');
+const bodyParser = require('koa-body');
+const cors = require('@koa/cors');
+const google_cal = require('./google_calendar');
+const shopifyApiCalls = require('./shopifyApiCalls');
+
 
 dotenv.config();
 
@@ -112,6 +114,8 @@ app.prepare().then(() => {
             const updatedId = await registeredIdModel.findOneAndUpdate({accountNumber: ctx.params.memberId}, update);
             console.log(updatedId)
             ctx.body = JSON.stringify(updatedId)
+            shopifyApiCalls.replaceCustomerTags(shopifyStore, ctx.request.body.shopifyCustomerId, ctx.request.body.cardTier)
+
         } catch (err) {
             console.log(err.name)
         }
@@ -154,9 +158,10 @@ app.prepare().then(() => {
                     }
                 }
                 );
+                
                 const getData = await getResponse.json();
                 console.log(getData.customer.tags)
-                const newCustomerTags = getData.customer.tags.concat(`, ${tier}`);
+                const newCustomerTags = getData.customer.tags.concat(`,${tier}`);
                 console.log(newCustomerTags)
                 
                 const requestOptions = {

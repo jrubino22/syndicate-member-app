@@ -17,8 +17,6 @@ const MemberPage = ({member}) => {
     const [selected, setSelected] = React.useState(options[0].value)
     const [newNotes, setNotes] = React.useState(member[0].notes)
     
-    console.log(newNotes)
-      console.log(urlParam)
 
     const handleTierChange = (event) => {      
         setSelected(event.target.value);
@@ -44,6 +42,7 @@ const MemberPage = ({member}) => {
 
         async function postFormDataAsJson() {
             const formDataJsonString = JSON.stringify({
+                shopifyCustomerId: member[0].shopifyCustomerId,
                 cardTier: selected,
                 notes: newNotes
             });
@@ -63,7 +62,7 @@ const MemberPage = ({member}) => {
                 throw new Error(errorMessage);
             }
             alert("your changes have been saved")             
-            return response.json()  
+            return response.json()
         }
     return(
     
@@ -93,7 +92,7 @@ const MemberPage = ({member}) => {
                             </select>
                         </label> <br></br>
                         <label>Member Notes: <br></br>
-                            <textarea name="memberNotes" className="notesTa" defaultValue={notes} value={newNotes} onChange={handleNotesChange}></textarea>
+                            <textarea name="memberNotes" className="notesTa"  value={newNotes} onChange={handleNotesChange}></textarea>
                         </label>
                         <input type="submit" value="Save Changes"></input>
                     </form>        
