@@ -59,7 +59,7 @@ const dateTimeForCalander = () => {
     let ninetyday = new Date(event.getFullYear(),event.getMonth(),event.getDate()+90);
 
     let startDate = ninetyday;
-    // Delay in end time is 1
+    // Delay in end time is .1
     let endDate = new Date(new Date(startDate).setHours(startDate.getHours()+.1));
 
     return {

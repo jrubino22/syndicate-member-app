@@ -87,6 +87,22 @@ app.prepare().then(() => {
         ctx.body = await registeredIdModel.find()
     })
 
+    // get a single membership by email
+    router.get('/api/member-email/:memberEmail', async (ctx) => {
+        try {
+            const memberNum = await registeredIdModel.find({ customerEmail: ctx.params.memberEmail });
+            if (!memberNum) {
+                ctx.throw(404);
+            }
+            ctx.body = memberNum;
+        } catch (err) {
+            if (err.name === 'CastError' || err.name === 'NotFoundError') {
+                ctx.throw(404);
+            }
+            ctx.throw(500);
+        }
+    })
+
     // get a single membership by account number
     router.get('/api/member/:memberNum', async (ctx) => {
         try {
