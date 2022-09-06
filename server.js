@@ -111,6 +111,7 @@ app.prepare().then(() => {
                 ctx.throw(404);
             }
             ctx.body = memberNum;
+            console.log(memberNum)
         } catch (err) {
             if (err.name === 'CastError' || err.name === 'NotFoundError') {
                 ctx.throw(404);
