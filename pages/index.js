@@ -25,7 +25,7 @@ const Index = ({member}) => {
 }
 
 export async function getServerSideProps(){
-    const response = await fetch('http://localhost:5000/api/members')
+    const response = await fetch('https://syndicate-member.herokuapp.com/api/members')
     const data = await response.json()
 
     return {
