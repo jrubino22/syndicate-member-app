@@ -1,3 +1,5 @@
+const dotenv = require('dotenv')
+dotenv.config()
 
 const replaceCustomerTags = async (shopifyStore, shopifyCustomerId, newCardTier) => {
     let thisUrl = `https://${shopifyStore}.myshopify.com/admin/api/2022-07/customers/${shopifyCustomerId}.json`
@@ -18,12 +20,12 @@ const replaceCustomerTags = async (shopifyStore, shopifyCustomerId, newCardTier)
     console.log(oldOnes)
 
     let colorTagIndex
-    if (oldOnes.indexOf('Blue') > -1) {
-        colorTagIndex = oldOnes.indexOf('Blue');
+    if (oldOnes.indexOf('Red') > -1) {
+        colorTagIndex = oldOnes.indexOf('Red');
     } else if (oldOnes.indexOf('Green') > -1) {
         colorTagIndex = oldOnes.indexOf('Green');
-    } else if (oldOnes.indexOf('Gold') > -1) {
-        colorTagIndex = oldOnes.indexOf('Gold');
+    } else if (oldOnes.indexOf('Blue') > -1) {
+        colorTagIndex = oldOnes.indexOf('Blue');
     } else if (oldOnes.indexOf('Black') > -1) {
         colorTagIndex = oldOnes.indexOf('Black');
     } else { colorTagIndex = 1 }
@@ -38,7 +40,7 @@ const replaceCustomerTags = async (shopifyStore, shopifyCustomerId, newCardTier)
 
     let typeTagIndex = -1
     let newTypeTag = '';
-    if (newCardTier === "Blue" || newCardTier === "Green") {
+    if (newCardTier === "Red" || newCardTier === "Green") {
         if (oldOnes.indexOf("distributor") > -1) {
             typeTagIndex = oldOnes.indexOf("distributor");
             newTypeTag = "retail"
@@ -48,7 +50,7 @@ const replaceCustomerTags = async (shopifyStore, shopifyCustomerId, newCardTier)
             newTypeTag = "retail"
         }
     }
-    if (newCardTier === "Gold") {
+    if (newCardTier === "Blue") {
         if (oldOnes.indexOf("retail") > -1) {
             typeTagIndex = oldOnes.indexOf("retail");
             newTypeTag = "distributor"
@@ -89,7 +91,7 @@ const replaceCustomerTags = async (shopifyStore, shopifyCustomerId, newCardTier)
         method: 'PUT',
         headers: {
             'Content-Type': 'application/json',
-            'X-Shopify-Access-Token': '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'
+            'X-Shopify-Access-Token': process.env.ACCESS_TOKEN
         },
         body: JSON.stringify({
             "customer":

@@ -8,9 +8,9 @@ const MemberPage = ({member}) => {
     const options =
       [
         {value: member[0].cardTier, text: member[0].cardTier },
-        {value: 'Blue', text: 'Blue'},
+        {value: 'Red', text: 'Red'},
         {value: 'Green', text: 'Green'},
-        {value: 'Gold', text: 'Gold'},
+        {value: 'Blue', text: 'Blue'},
         {value: 'Black', text: 'Black'},
       ]
     

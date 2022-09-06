@@ -153,11 +153,11 @@ app.prepare().then(() => {
                     }
                 });
                 if (idPrefix === "1658") {
-                    tier = "Blue"
+                    tier = "Red"
                 } else if (idPrefix === "2409") {
                     tier = "Green"
                 } else if (idPrefix === "3945") {
-                    tier = "Gold"
+                    tier = "Blue"
                 } else if (idPrefix === "4679") {
                     tier = "Black"
                 } else {
@@ -170,7 +170,7 @@ app.prepare().then(() => {
                     method: 'GET',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Shopify-Access-Token': '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'
+                        'X-Shopify-Access-Token': process.env.ACCESS_TOKEN
                     }
                 }
                 );
@@ -184,7 +184,7 @@ app.prepare().then(() => {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
-                        'X-Shopify-Access-Token': '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'
+                        'X-Shopify-Access-Token': process.env.ACCESS_TOKEN
                     },
                     body: JSON.stringify({
                         "customer":
@@ -234,37 +234,7 @@ app.prepare().then(() => {
         }
     })
 
-    // get all warranties for a single customer
-    router.get('(.*)/warranties/:email', async (ctx) => {
-        try {
-            const productreg = await registeredProductModel.find({ customerEmail: ctx.params.email });
-            if (!productreg) {
-                ctx.throw(404);
-            }
-            ctx.body = productreg;
-        } catch (err) {
-            if (err.name === 'CastError' || err.name === 'NotFoundError') {
-                ctx.throw(404);
-            }
-            ctx.throw(500);
-        }
-    })
 
-
-    // update warranty status
-    router.put('(.*)/warranty/:id', async (ctx) => {
-        ctx.body = await registeredProductModel.findByIdAndUpdate(ctx.params.id,
-            { warrantyStatus: "inactive" })
-    })
-
-    router.post('(.*)/warranties', bodyParser(), async (ctx) => {
-        try {
-            const registeredproduct = new registeredProductModel(ctx.request.body).save();
-            ctx.body = JSON.stringify(registeredproduct)
-        } catch (err) {
-            console.log(error)
-        }
-    })
     //keep dynos running
     function keepAwake(url) {
         setInterval(async function () {
