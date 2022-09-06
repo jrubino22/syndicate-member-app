@@ -242,6 +242,7 @@ app.prepare().then(() => {
             response
         }, 5 * 60 * 1000);
     }
+    keepAwake('https://syndicate-member.herokuapp.com')
 
     router.get('(.*)', handleRequest);
     server.use(router.allowedMethods());
