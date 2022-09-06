@@ -33,7 +33,7 @@ Shopify.Context.initialize({
 
 });
 
-const shopifyStore = "joeyskillsharedemo"
+
 const port = (process.env.PORT || 5000);
 const dev = process.env.NODE_ENV !== 'production';
 const prod = process.env.NODE_ENV === 'production';
@@ -164,7 +164,7 @@ app.prepare().then(() => {
                     console.error()
                 }
 
-                let thisUrl = `https://${shopifyStore}.myshopify.com/admin/api/2022-07/customers/${ctx.request.body.shopifyCustomerId}.json`
+                let thisUrl = `https://${process.env.SHOPIFY_STORE}.myshopify.com/admin/api/2022-07/customers/${ctx.request.body.shopifyCustomerId}.json`
 
                 getResponse = await fetch(thisUrl, {
                     method: 'GET',

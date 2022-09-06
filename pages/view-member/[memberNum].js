@@ -29,7 +29,7 @@ const MemberPage = ({member}) => {
     }
 
       async function handleFormSubmit() {
-        const thisUrl = `http://localhost:5000/api/update/${urlParam}`
+        const thisUrl = `https://syndicate-member.herokuapp.com/api/update/${urlParam}`
 
         try{
             console.log(thisUrl)
@@ -54,7 +54,7 @@ const MemberPage = ({member}) => {
                 },
                 body: formDataJsonString,
             };
-            const response = await fetch(`http://localhost:5000/api/update/${member[0].accountNumber}`, fetchOptions);
+            const response = await fetch(`https://syndicate-member.herokuapp.com/api/update/${member[0].accountNumber}`, fetchOptions);
 
             if (!response.ok) {
                 console.log('error in fetch')
@@ -103,7 +103,7 @@ const MemberPage = ({member}) => {
 
 export async function getServerSideProps(props){
 
-    const response = await fetch(`http://localhost:5000/api/member/${props.query.memberNum}`)
+    const response = await fetch(`https://syndicate-member.herokuapp.com/api/member/${props.query.memberNum}`)
     const data = await response.json()
 
     return {
