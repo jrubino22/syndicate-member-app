@@ -130,7 +130,7 @@ app.prepare().then(() => {
             const updatedId = await registeredIdModel.findOneAndUpdate({accountNumber: ctx.params.memberId}, update);
             console.log(updatedId)
             ctx.body = JSON.stringify(updatedId)
-            shopifyApiCalls.replaceCustomerTags(shopifyStore, ctx.request.body.shopifyCustomerId, ctx.request.body.cardTier)
+            shopifyApiCalls.replaceCustomerTags(process.env.SHOPIFY_STORE, ctx.request.body.shopifyCustomerId, ctx.request.body.cardTier)
 
         } catch (err) {
             console.log(err.name)

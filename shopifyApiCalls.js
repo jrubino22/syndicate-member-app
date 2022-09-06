@@ -8,7 +8,7 @@ const replaceCustomerTags = async (shopifyStore, shopifyCustomerId, newCardTier)
         method: 'GET',
         headers: {
             'Content-Type': 'application/json',
-            'X-Shopify-Access-Token': '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'
+            'X-Shopify-Access-Token': process.env.ACCESS_TOKEN
         }
     }
     );
