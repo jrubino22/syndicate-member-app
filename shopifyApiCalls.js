@@ -15,7 +15,7 @@ const replaceCustomerTags = async (shopifyStore, shopifyCustomerId, newCardTier)
     const getData = await getResponse.json();
 
     // const oldOnes = getData.customer.tags
-    // console.log(oldOnes)
+    console.log(getData)
     const oldOnes = getData.customer.tags.split(", ")
     console.log(oldOnes)
 
