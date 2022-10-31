@@ -12,7 +12,7 @@ const MemberPage = ({member}) => {
         {value: 'Blue', text: 'Blue'},
         {value: 'Gold', text: 'Gold'},
         {value: 'Black', text: 'Black'},
-        {value: 'remove_all', text:'remove membership benifits'}
+        {value: 'None', text:'None'}
       ]
     
     const [selected, setSelected] = React.useState(options[0].value)
