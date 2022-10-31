@@ -31,8 +31,11 @@ const replaceCustomerTags = async (
     colorTagIndex = oldOnes.indexOf('Gold');
   } else if (oldOnes.indexOf('Black') > -1) {
     colorTagIndex = oldOnes.indexOf('Black');
-  } else {
-    colorTagIndex = 1;
+  } else if (oldOnes.indexOf('None') > -1) {
+    colorTagIndex = oldOnes.indexOf('None');
+  }
+   else {
+    colorTagIndex = -1;
   }
 
   console.log(colorTagIndex);
@@ -94,6 +97,7 @@ const replaceCustomerTags = async (
     oldOnes.splice(typeTagIndex, 1);
     oldOnes.push(newTypeTag);
   }
+    
 
   newCustomerTags = oldOnes.concat(`${newCardTier}`);
   console.log(newCustomerTags);
