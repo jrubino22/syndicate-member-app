@@ -22,10 +22,10 @@ const replaceCustomerTags = async (shopifyStore, shopifyCustomerId, newCardTier)
     let colorTagIndex
     if (oldOnes.indexOf('Red') > -1) {
         colorTagIndex = oldOnes.indexOf('Red');
-    } else if (oldOnes.indexOf('Green') > -1) {
-        colorTagIndex = oldOnes.indexOf('Green');
     } else if (oldOnes.indexOf('Blue') > -1) {
         colorTagIndex = oldOnes.indexOf('Blue');
+    } else if (oldOnes.indexOf('Gold') > -1) {
+        colorTagIndex = oldOnes.indexOf('Gold');
     } else if (oldOnes.indexOf('Black') > -1) {
         colorTagIndex = oldOnes.indexOf('Black');
     } else { colorTagIndex = 1 }
@@ -40,7 +40,7 @@ const replaceCustomerTags = async (shopifyStore, shopifyCustomerId, newCardTier)
 
     let typeTagIndex = -1
     let newTypeTag = '';
-    if (newCardTier === "Red" || newCardTier === "Green") {
+    if (newCardTier === "Red" || newCardTier === "Blue") {
         if (oldOnes.indexOf("distributor") > -1) {
             typeTagIndex = oldOnes.indexOf("distributor");
             newTypeTag = "retail"
@@ -50,7 +50,7 @@ const replaceCustomerTags = async (shopifyStore, shopifyCustomerId, newCardTier)
             newTypeTag = "retail"
         }
     }
-    if (newCardTier === "Blue") {
+    if (newCardTier === "Gold") {
         if (oldOnes.indexOf("retail") > -1) {
             typeTagIndex = oldOnes.indexOf("retail");
             newTypeTag = "distributor"
@@ -68,6 +68,16 @@ const replaceCustomerTags = async (shopifyStore, shopifyCustomerId, newCardTier)
         if (oldOnes.indexOf("distributor") > -1) {
             typeTagIndex = oldOnes.indexOf("distributor");
             newTypeTag = "master-distributor"
+        }
+    }
+    if(newCardTier === "remove_all") {
+        if (oldOnes.indexOf("distributor") > -1) {
+            typeTagIndex = oldOnes.indexOf("distributor");
+            newTypeTag = "retail"
+        }
+        if (oldOnes.indexOf("master-distributor") > -1) {
+            typeTagIndex = oldOnes.indexOf("master-distributor");
+            newTypeTag = "retail"
         }
     }
 
