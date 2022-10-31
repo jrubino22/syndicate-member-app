@@ -9,8 +9,8 @@ const MemberPage = ({member}) => {
       [
         {value: member[0].cardTier, text: member[0].cardTier },
         {value: 'Red', text: 'Red'},
-        {value: 'Green', text: 'Green'},
         {value: 'Blue', text: 'Blue'},
+        {value: 'Gold', text: 'Gold'},
         {value: 'Black', text: 'Black'},
         {value: 'remove_all', text:'remove membership benifits'}
       ]
