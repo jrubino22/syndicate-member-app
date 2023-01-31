@@ -1,37 +1,12 @@
 import Link from 'next/link';
 
 const Index = ({ member }) => {
-  // function click() {
-  //     const router = useRouter()
 
-  //     router.push(
-  //         {pathname: `/view-member/${member.accountNumber}`, query: {accountNumber: member.accountNumber}}, `/view-member/${member.accountNumber}`
-  //     );
-  // }
   return (
-    <>
-      <div>
-        <ul>
-          <li>
-            <Link href="/admin/dashboard">
-              <a className="font-bold">Dashboard</a>
-            </Link>
-          </li>
-          <li>
-            <Link href="/admin/orders">Orders</Link>
-          </li>
-          <li>
-            <Link href="/admin/products">Products</Link>
-          </li>
-          <li>
-            <Link href="/admin/users">Users</Link>
-          </li>
-          <li>
-            <Link href="/admin/media">Media</Link>
-          </li>
-        </ul>
-      </div>
-      {member.map((_Id, customerEmail, cardTier, accountNumber) => (
+
+    <div>
+      
+      {member.map(({_Id, customerEmail, cardTier, accountNumber}) => (
       <div key={_Id} className="border">
         <p>
           <span> Customer Email: {customerEmail} </span>|
@@ -47,7 +22,7 @@ const Index = ({ member }) => {
         </p>
       </div>
       ))}
-    </>
+    </div>
   );
 };
 

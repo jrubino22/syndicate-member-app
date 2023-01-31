@@ -2,23 +2,23 @@ import Link from 'next/link';
 
 const UnregisteredCards = ({ card }) => {
   return (
-    <>
-      {
+    
+      
         card.map(({ _Id, memberId }) => (
           <div key={_Id} className="border">
             <p>
               <span> ID Number: {memberId} </span>
               <Link
                 key={_Id}
-                href={`/view-member/${accountNumber}`}
+                href={`/unregistered-cards`}
                 className="editButton"
               >
                 <button className="editButton">View Member</button>
               </Link>
             </p>
           </div>
-        ))}
-    </>
+        ))
+    
   );
 };
 
