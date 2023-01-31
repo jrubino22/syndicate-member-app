@@ -81,6 +81,10 @@ app.prepare().then(() => {
     router.get("(/_next/static/.*)", handleRequest);
     router.get("/_next/webpack-hmr", handleRequest);
 
+    //get all unregistered cards
+    router.get('/api/unregistered', async (ctx) => {
+        ctx.body = await unregisteredIdModel.find()
+    })
 
     // get all members
     router.get('/api/members', async (ctx) => {
