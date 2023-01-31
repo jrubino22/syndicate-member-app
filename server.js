@@ -86,7 +86,7 @@ app.prepare().then(() => {
       const card = await unregisteredIdModel.find({
         memberId: ctx.params.memberNum,
       });
-      if (!memberId) {
+      if (!card) {
         ctx.throw(404);
       }
       ctx.body = card;
