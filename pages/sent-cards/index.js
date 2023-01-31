@@ -1,6 +1,6 @@
 import Link from 'next/link';
 
-const UnregisteredCards = ({ card }) => {
+const SentCards = ({ card }) => {
   return (
     <div>
       <div className="menu-container">
@@ -12,12 +12,12 @@ const UnregisteredCards = ({ card }) => {
           </li>
           <li>
             <Link href="/sent-cards">
-              <a className="menu-txt">Sent & Unregistered</a>
+              <a className="bold menu-txt">Sent & Unregistered</a>
             </Link>
           </li>
           <li>
             <Link href="/unregistered-cards">
-              <a className="bold menu-txt">Unsent Cards</a>
+            <a className="menu-txt">Unsent Cards</a>
             </Link>
           </li>
         </ul>
@@ -25,21 +25,16 @@ const UnregisteredCards = ({ card }) => {
       <div className="content-container">
         {card
           .filter(function ({ sent }) {
-            if (sent === true) {
+            if (sent === false) {
               return false;
             }
             return true;
           })
-          .map(({ _Id, memberId }) => (
-            <div key={_Id} className="unsent-card-container">
+          .map(({ _Id, memberId, sentTo }) => (
+            <div key={_Id} className="border">
               <p>
                 <span> ID Number: {memberId} </span>
-                <Link
-                  href={`/unregistered-cards/${memberId}`}
-                  className="editButton"
-                >
-                  <button className="editButton">Edit</button>
-                </Link>
+                <span> Sent to: {sentTo}</span>
               </p>
             </div>
           ))}
@@ -61,4 +56,4 @@ export async function getServerSideProps() {
   };
 }
 
-export default UnregisteredCards;
+export default SentCards;
