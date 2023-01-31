@@ -65,13 +65,19 @@
     border-style: solid;
     border-color: darkmagenta;
     margin-top: 5px;
-    max-width: 600px;
+    max-width: 450px;
     padding-left: 50px;
 }
 
 .menu-txt{
     font-size: 18px;
     color: rgb(90, 81, 81);
+}
+
+.sendTa{
+    height: 250px;
+    width: 500px;
+    margin-bottom: 30px;
 }
 
 h1 {

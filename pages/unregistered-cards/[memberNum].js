@@ -48,9 +48,9 @@ const SendCard = ({card}) => {
         }
     return(
     
-        card.map(({memberId, sentTo}) => (
+        card.map(({memberId}) => (
             <>
-                <Link href={`/unregistered-card`}>
+                <Link href={`/unregistered-cards`}>
                 <button className="backButton">Back</button>
                 </Link>
                 <div className="border">
@@ -63,9 +63,9 @@ const SendCard = ({card}) => {
                     <form className="memberForm" onSubmit={() => handleFormSubmit()}> 
                      <br></br>
                         <label>Sent To: <br></br>
-                            <textarea name="sentTo" className="notesTa"  value={sentTo} onChange={handleSentTo}></textarea>
+                            <textarea name="sentTo" className="sendTa"  value={sentTo} onChange={handleSentTo}></textarea>
                         </label>
-                        <input type="submit" value="Save Changes"></input>
+                        <input type="submit" value="Mark Card Sent"></input>
                     </form>        
                 </div>                     
             </>      
