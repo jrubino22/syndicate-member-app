@@ -47,21 +47,34 @@
     margin: .5%;
 }
 
-.flex-container{
-    display: flex;
-}
+
 
 .flex-menu{
-    flex-grow: 1;
-    margin-left:10px
+    text-align: center;
+    margin-left:10px;
+    list-style: none;
 }
 
 .flex-content{
-    flex-grow:8;
     margin-left: 20px;
 }
 
+.unsent-card-container{
+    margin-right: auto;
+    margin-left: auto;
+    border-style: solid;
+    border-color: darkmagenta;
+    margin-top: 5px;
+    max-width: 600px;
+    padding-left: 50px;
+}
+
 .menu-txt{
-    font-size: 16px;
-    color: black;
+    font-size: 18px;
+    color: rgb(90, 81, 81);
+}
+
+h1 {
+    font-size: 25px;
+    color: black
 }

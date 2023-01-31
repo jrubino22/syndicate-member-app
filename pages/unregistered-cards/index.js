@@ -3,7 +3,7 @@ import Link from 'next/link';
 const UnregisteredCards = ({ card }) => {
   return (
     <div>
-      <div>
+      <div className="menu-container">
         <ul>
           <li>
             <Link href="/"><a className="menu-txt">Registered Members</a></Link>
@@ -18,18 +18,17 @@ const UnregisteredCards = ({ card }) => {
           </li>
         </ul>
       </div>
-      <div>
+      <div className="content-container">
         {card.sent !== true &&
           card.map(({ _Id, memberId }) => (
-            <div key={_Id} className="border">
+            <div key={_Id} className="unsent-card-container">
               <p>
                 <span> ID Number: {memberId} </span>
                 <Link
-                  key={_Id}
-                  href={`/unregistered-cards`}
+                  href={`/unregistered-cards/${memberId}`}
                   className="editButton"
                 >
-                  <button className="editButton">View Member</button>
+                  <button className="editButton">Send</button>
                 </Link>
               </p>
             </div>
