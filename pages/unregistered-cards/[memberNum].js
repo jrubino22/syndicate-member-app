@@ -2,6 +2,8 @@ import * as React from 'react'
 import Link from 'next/link'
 
 const SendCard = ({card}) => {
+
+    const urlParam = card[0].memberId
     
     const [sentTo, setSentTo] = React.useState(card[0].sentTo)
     
@@ -54,10 +56,10 @@ const SendCard = ({card}) => {
                 <Link href={`/unregistered-cards`}>
                 <button className="backButton">Back</button>
                 </Link>
-                <div className="border">
-                <p className="memberPageHeader">
+                <div  className="sendCardPageHeader">
+                <p>
                     <span><span className="bold">Card Number:</span> {memberId} </span>
-                    <span><span className="bold">Sent:</span> {sent} </span>
+                    <span><span className="bold">Sent:</span> {sent ? "True" : "False"} </span>
                 </p>
                 </div>   
                 <div key="form" className="formDiv">
@@ -65,7 +67,7 @@ const SendCard = ({card}) => {
                     <form className="memberForm" onSubmit={() => handleFormSubmit()}> 
                      <br></br>
                         <label>Sent To: <br></br>
-                            <textarea name="sentTo" className="sendTa"  value={sentTo} onChange={handleSentTo}></textarea>
+                            <textarea required name="sentTo" className="sendTa"  value={sentTo} onChange={handleSentTo}></textarea>
                         </label>
                         <input type="submit" value="Mark Card Sent"></input>
                     </form>        

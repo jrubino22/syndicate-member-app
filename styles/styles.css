@@ -69,13 +69,24 @@
     padding-left: 50px;
 }
 
+.sendCardPageHeader{
+    margin-right: auto;
+    margin-left: auto;
+    border-style: solid;
+    border-color: darkmagenta;
+    margin-top: 5px;
+    max-width: 400px;
+    padding-left: 50px;
+    font-size: 18px;
+}
+
 .menu-txt{
     font-size: 18px;
     color: rgb(90, 81, 81);
 }
 
 .sendTa{
-    height: 250px;
+    height: 150px;
     width: 500px;
     margin-bottom: 30px;
 }
