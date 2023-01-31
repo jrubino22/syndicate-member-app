@@ -3,7 +3,7 @@ import Link from 'next/link';
 const UnregisteredCards = ({ card }) => {
   return (
     <>
-      {card.sent != true &&
+      {
         card.map(({ _Id, memberId }) => (
           <div key={_Id} className="border">
             <p>
