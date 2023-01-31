@@ -13,7 +13,9 @@ const SendCard = ({card}) => {
 
       async function handleFormSubmit() {
         const thisUrl = `https://syndicate-member.herokuapp.com/api/send/${urlParam}`
-
+        if (!window.confirm('Mark card sent?')) {
+            return;
+          }
         try{
             console.log(thisUrl)
             await postFormDataAsJson({thisUrl})
@@ -25,7 +27,6 @@ const SendCard = ({card}) => {
 
         async function postFormDataAsJson() {
             const formDataJsonString = JSON.stringify({
-                sent: true,
                 sentTo: sentTo
             });
             const fetchOptions = {
@@ -48,7 +49,7 @@ const SendCard = ({card}) => {
         }
     return(
     
-        card.map(({memberId}) => (
+        card.map(({memberId, sent}) => (
             <>
                 <Link href={`/unregistered-cards`}>
                 <button className="backButton">Back</button>
@@ -56,6 +57,7 @@ const SendCard = ({card}) => {
                 <div className="border">
                 <p className="memberPageHeader">
                     <span><span className="bold">Card Number:</span> {memberId} </span>
+                    <span><span className="bold">Sent:</span> {sent} </span>
                 </p>
                 </div>   
                 <div key="form" className="formDiv">

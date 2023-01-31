@@ -105,7 +105,7 @@ app.prepare().then(() => {
     };
     try {
       const updatedId = await unregisteredIdModel.findOneAndUpdate(
-        { accountNumber: ctx.params.memberId },
+        { memberId: ctx.params.memberId },
         update
       );
       console.log(updatedId);
