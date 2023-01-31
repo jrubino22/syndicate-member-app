@@ -1,27 +1,41 @@
 import Link from 'next/link';
 
 const Index = ({ member }) => {
-
   return (
-
-    <div>
-      
-      {member.map(({_Id, customerEmail, cardTier, accountNumber}) => (
-      <div key={_Id} className="border">
-        <p>
-          <span> Customer Email: {customerEmail} </span>|
-          <span> Membership Tier: {cardTier} </span>|
-          <span> Account Number: {accountNumber} </span>
-          <Link
-            key={_Id}
-            href={`/view-member/${accountNumber}`}
-            className="editButton"
-          >
-            <button className="editButton">View Member</button>
-          </Link>
-        </p>
+    <div className="flex-container">
+      <div className="menu-container">
+        <ul>
+          <li>
+            <Link href="/">
+              <a className="bold">Registered Members</a>
+            </Link>
+          </li>
+          <li>
+            <Link href="/sent-cards">Sent & Unregistered</Link>
+          </li>
+          <li>
+            <Link href="/unregistered-cards">Unsent Cards</Link>
+          </li>
+        </ul>
       </div>
-      ))}
+      <div className="content-container">
+        {member.map(({ _Id, customerEmail, cardTier, accountNumber }) => (
+          <div key={_Id} className="border">
+            <p>
+              <span> Customer Email: {customerEmail} </span>|
+              <span> Membership Tier: {cardTier} </span>|
+              <span> Account Number: {accountNumber} </span>
+              <Link
+                key={_Id}
+                href={`/view-member/${accountNumber}`}
+                className="editButton"
+              >
+                <button className="editButton">View Member</button>
+              </Link>
+            </p>
+          </div>
+        ))}
+      </div>
     </div>
   );
 };

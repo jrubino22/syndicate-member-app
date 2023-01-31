@@ -46,3 +46,15 @@
     padding: 10px;
     margin: .5%;
 }
+
+.flex-container{
+    display: flex;
+}
+
+.flex-menu{
+    flex-grow: 1;
+}
+
+.flex-content{
+    flex-grow:5
+}
