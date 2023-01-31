@@ -6,10 +6,14 @@ const UnregisteredCards = ({ card }) => {
       <div className="menu-container">
         <ul>
           <li>
-            <Link href="/"><a className="menu-txt">Registered Members</a></Link>
+            <Link href="/">
+              <a className="menu-txt">Registered Members</a>
+            </Link>
           </li>
           <li>
-            <Link href="/sent-cards"><a className="menu-txt">Sent & Unregistered</a></Link>
+            <Link href="/sent-cards">
+              <a className="menu-txt">Sent & Unregistered</a>
+            </Link>
           </li>
           <li>
             <Link href="/unregistered-cards">
@@ -19,8 +23,14 @@ const UnregisteredCards = ({ card }) => {
         </ul>
       </div>
       <div className="content-container">
-        {card.sent !== true &&
-          card.map(({ _Id, memberId }) => (
+        {card
+          .filter(function ({ sent }) {
+            if (sent === true) {
+              return false;
+            }
+            return true;
+          })
+          .map(({ _Id, memberId }) => (
             <div key={_Id} className="unsent-card-container">
               <p>
                 <span> ID Number: {memberId} </span>

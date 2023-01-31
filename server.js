@@ -101,7 +101,7 @@ app.prepare().then(() => {
   router.put('/api/send/:memberId', bodyParser(), async (ctx) => {
     const update = {
       sent: true,
-      notes: ctx.request.body.sentTo,
+      sentTo: ctx.request.body.sentTo,
     };
     try {
       const updatedId = await unregisteredIdModel.findOneAndUpdate(
