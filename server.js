@@ -86,10 +86,10 @@ app.prepare().then(() => {
       const card = await unregisteredIdModel.find({
         memberId: ctx.params.memberNum,
       });
-      if (!memberNum) {
+      if (!memberId) {
         ctx.throw(404);
       }
-      ctx.body = memberNem;
+      ctx.body = card;
     } catch (err) {
       if (err.name === 'CastError' || err.name === 'NotFoundError') {
         ctx.throw(404);
@@ -99,7 +99,6 @@ app.prepare().then(() => {
   });
       //Mark Card Sent
       router.put('/api/send/:memberId', bodyParser(), async (ctx) => {
-        // const idNumber = await registeredIdModel.find({ accountNumber: ctx.params.memberId });
         const update = {
           sent: true,
           notes: ctx.request.body.sentTo,
