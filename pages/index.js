@@ -7,14 +7,14 @@ const Index = ({ member }) => {
         <ul>
           <li>
             <Link href="/">
-              <a className="bold">Registered Members</a>
+              <a className="bold menu-txt">Registered Members</a>
             </Link>
           </li>
           <li>
-            <Link href="/sent-cards">Sent & Unregistered</Link>
+            <Link href="/sent-cards"><a className="menu-txt">Sent & Unregistered</a></Link>
           </li>
           <li>
-            <Link href="/unregistered-cards">Unsent Cards</Link>
+            <Link href="/unregistered-cards"><a className="menu-txt">Unsent Cards</a></Link>
           </li>
         </ul>
       </div>

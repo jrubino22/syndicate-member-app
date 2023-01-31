@@ -53,8 +53,15 @@
 
 .flex-menu{
     flex-grow: 1;
+    margin-left:10px
 }
 
 .flex-content{
-    flex-grow:5
+    flex-grow:8;
+    margin-left: 20px;
+}
+
+.menu-txt{
+    font-size: 16px;
+    color: black;
 }

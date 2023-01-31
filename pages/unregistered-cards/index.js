@@ -6,14 +6,14 @@ const UnregisteredCards = ({ card }) => {
       <div>
         <ul>
           <li>
-            <Link href="/">Registered Members</Link>
+            <Link href="/"><a className="menu-txt">Registered Members</a></Link>
           </li>
           <li>
-            <Link href="/sent-cards">Sent & Unregistered</Link>
+            <Link href="/sent-cards"><a className="menu-txt">Sent & Unregistered</a></Link>
           </li>
           <li>
             <Link href="/unregistered-cards">
-              <a className="bold">Unsent Cards</a>
+              <a className="bold menu-txt">Unsent Cards</a>
             </Link>
           </li>
         </ul>
