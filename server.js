@@ -97,24 +97,23 @@ app.prepare().then(() => {
       ctx.throw(500);
     }
   });
-      //Mark Card Sent
-      router.put('/api/send/:memberId', bodyParser(), async (ctx) => {
-        const update = {
-          sent: true,
-          notes: ctx.request.body.sentTo,
-        };
-        try {
-          const updatedId = await unregisteredIdModel.findOneAndUpdate(
-            { accountNumber: ctx.params.memberId },
-            update
-          );
-          console.log(updatedId);
-          ctx.body = JSON.stringify(updatedId);
-          
-        } catch (err) {
-          console.log(err.name);
-        }
-      });
+  //Mark Card Sent
+  router.put('/api/send/:memberId', bodyParser(), async (ctx) => {
+    const update = {
+      sent: true,
+      notes: ctx.request.body.sentTo,
+    };
+    try {
+      const updatedId = await unregisteredIdModel.findOneAndUpdate(
+        { accountNumber: ctx.params.memberId },
+        update
+      );
+      console.log(updatedId);
+      ctx.body = JSON.stringify(updatedId);
+    } catch (err) {
+      console.log(err.name);
+    }
+  });
 
   // get all members
   router.get('/api/members', async (ctx) => {
