@@ -38,32 +38,32 @@ const handle = app.getRequestHandler();
 
 const ACTIVE_SHOPIFY_SHOPS = {};
 
-app.prepare().then(() => {
-  const server = new Koa();
-  server.use(cors());
-  const router = new Router();
-  server.keys = [Shopify.Context.API_SECRET_KEY];
+// app.prepare().then(() => {
+//   const server = new Koa();
+//   server.use(cors());
+//   const router = new Router();
+//   server.keys = [Shopify.Context.API_SECRET_KEY];
 
-  server.use(
-    createShopifyAuth({
-      afterAuth(ctx) {
-        const { shop, scope } = ctx.state.shopify;
-        ACTIVE_SHOPIFY_SHOPS[shop] = scope;
+//   server.use(
+//     createShopifyAuth({
+//       afterAuth(ctx) {
+//         const { shop, scope } = ctx.state.shopify;
+//         ACTIVE_SHOPIFY_SHOPS[shop] = scope;
 
-        if (ACTIVE_SHOPIFY_SHOPS[shop]) {
-          ctx.redirect(`https://${shop}/admin/apps`);
-        } else {
-          ctx.redirect(`/?shop=${shop}`);
-        }
-      },
-    })
-  );
+//         if (ACTIVE_SHOPIFY_SHOPS[shop]) {
+//           ctx.redirect(`https://${shop}/admin/apps`);
+//         } else {
+//           ctx.redirect(`/?shop=${shop}`);
+//         }
+//       },
+//     })
+//   );
 
-  const handleRequest = async (ctx) => {
-    await handle(ctx.req, ctx.res);
-    ctx.respond = true;
-    ctx.res.statusCode = 200;
-  };
+//   const handleRequest = async (ctx) => {
+//     await handle(ctx.req, ctx.res);
+//     ctx.respond = true;
+//     ctx.res.statusCode = 200;
+//   };
 
   router.get('/', async (ctx) => {
     const shop = ctx.query.shop;
