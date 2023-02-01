@@ -85,6 +85,22 @@ app.prepare().then(() => {
       return;
     }
 
+    const productIdStruct = JSON.parse(ctx.request.body).productId.split("/");
+    const productId = productIdStruct[productIdStruct.length - 1];
+
+    ACTIVE_SHOPIFY_SHOPS[shop].settings = { productId };
+
+    const client = new Shopify.Clients.Rest(session.shop, session.accessToken);
+
+    const productDetails = await client.get({
+      path: `products/${productId}`,
+      type: DataType.JSON,
+    });
+
+    ctx.body = {
+      status: "OK_SETTINGS",
+      data: productDetails.body.product,
+    };
     ctx.status = 200;
   });
 
