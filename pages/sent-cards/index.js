@@ -31,9 +31,9 @@ const SentCards = ({ card }) => {
             return true;
           })
           .map(({ _Id, memberId, sentTo }) => (
-            <div key={_Id} className="border">
+            <div key={_Id} className="unsent-card-container">
               <p>
-                <span> ID Number: {memberId} </span>
+                <span> ID Number: {memberId} |</span>
                 <span> Sent to: {sentTo}</span>
               </p>
             </div>
