@@ -73,7 +73,7 @@ app.prepare().then(() => {
       // Load app skeleton. Don't include sensitive information here!
       ctx.body = '🎉';
     }
-    await handleRequest(ctx);
+    // await handleRequest(ctx);
   });
 
   router.get('(/_next/static/.*)', handleRequest);
