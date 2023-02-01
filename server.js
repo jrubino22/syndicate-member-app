@@ -7,7 +7,6 @@ const { default: createShopifyAuth } = require('@shopify/koa-shopify-auth');
 const { verifyRequest } = require('@shopify/koa-shopify-auth');
 const { default: Shopify, ApiVersion } = require('@shopify/shopify-api');
 const Router = require('koa-router');
-const warrantiesRouter = require('./routes/Routes');
 const registeredIdModel = require('./models/registeredIdModel');
 const unregisteredIdModel = require('./models/unregisteredIdModel');
 const bodyParser = require('koa-body');
@@ -75,10 +74,40 @@ app.prepare().then(() => {
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);
 
+  router.get('/install', async (ctx) => {
+    app.prepare().then(() => {
+      const server = new Koa();
+      server.use(cors());
+      const router = new Router();
+      server.keys = [Shopify.Context.API_SECRET_KEY];
+    
+      server.use(
+        createShopifyAuth({
+          afterAuth(ctx) {
+            const { shop, scope } = ctx.state.shopify;
+            ACTIVE_SHOPIFY_SHOPS[shop] = scope;
+    
+            if (ACTIVE_SHOPIFY_SHOPS[shop]) {
+              ctx.redirect(`https://${shop}/admin/apps`);
+            } else {
+              ctx.redirect(`/?shop=${shop}`);
+            }
+          },
+        })
+      );
+    
+      const handleRequest = async (ctx) => {
+        await handle(ctx.req, ctx.res);
+        ctx.respond = true;
+        ctx.res.statusCode = 200;
+      };    
+  })
+
   //get all unregistered cards
   router.get('/api/unregistered', async (ctx) => {
     ctx.body = await unregisteredIdModel.find();
   });
+
 
   //get one unregistered card by account number
   router.get('/api/unregistered/:memberNum', async (ctx) => {
