@@ -67,7 +67,12 @@ app.prepare().then(() => {
 
   router.get('/', async (ctx) => {
     const shop = ctx.query.shop;
-
+    if (ACTIVE_SHOPIFY_SHOPS[shop] === undefined) {
+      ctx.redirect(`/auth?shop=${shop}`);
+    } else {
+      // Load app skeleton. Don't include sensitive information here!
+      ctx.body = '🎉';
+    }
     await handleRequest(ctx);
   });
 
