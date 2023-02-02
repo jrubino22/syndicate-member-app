@@ -4,7 +4,7 @@ const Koa = require('koa');
 const mongoose = require('mongoose');
 const next = require('next');
 // const shopifyAuth = require('@shopify/koa-shopify-auth');
-const { default: shopifyAuth, verifyRequest } = require('@shopify/koa-shopify-auth');
+const { default: shopifyAuth } = require('@shopify/koa-shopify-auth');
 const { default: Shopify, ApiVersion } = require('@shopify/shopify-api');
 const Router = require('koa-router');
 const registeredIdModel = require('./models/registeredIdModel');
@@ -13,12 +13,16 @@ const bodyParser = require('koa-body');
 const cors = require('@koa/cors');
 const google_cal = require('./google_calendar');
 const shopifyApiCalls = require('./shopifyApiCalls');
+import {createShopifyAuth, verifyRequest} from "simple-koa-shopify-auth"
 
 dotenv.config();
 
 mongoose.connect(process.env.MONGO_URL, () => {
   console.log('Connected to Mongo DB');
 });
+
+const verifyApiRequest = verifyRequest({ returnHeader: true });
+const verifyPageRequest = verifyRequest();
 
 Shopify.Context.initialize({
   API_KEY: process.env.SHOPIFY_API_KEY,
@@ -44,52 +48,48 @@ app.prepare().then(() => {
   const router = new Router();
   server.keys = [Shopify.Context.API_SECRET_KEY];
 
+  router.get('/install', async (ctx) => {
   server.use(
-    shopifyAuth({
-     async  afterAuth(ctx) {
+    createShopifyAuth({
+      accessMode: "offline",
+      authPath: "/install/auth",
+      async afterAuth(ctx) {
         const { shop, accessToken } = ctx.state.shopify;
-        ACTIVE_SHOPIFY_SHOPS[shop] = true;
-
-        const response = await Shopify.Webhooks.Registry.register({
-          shop,
-          accessToken,
-          path: '/webhooks',
-          topic: 'APP_UNINSTALLED',
-          webhookHandler: async (topic, shop, body) =>
-            delete ACTIVE_SHOPIFY_SHOPS[shop],
-        });
-  
-        if (!response.success) {
-          console.log(
-            `Failed to register APP_UNINSTALLED webhook: ${response.result}`,
-          );
+        const { host } = ctx.query;
+        if (!accessToken) {
+          // This can happen if the browser interferes with the auth flow
+          ctx.response.status = 500;
+          ctx.response.body = "Failed to get access token! Please try again.";
+          return;
         }
-  
-        // Redirect to app with shop parameter upon auth
-        ctx.redirect(`/?shop=${shop}`);
+        // Redirect to user auth endpoint, to get user's online token
+        ctx.redirect(`/auth?shop=${shop}&host=${host}`);
       },
-    }),
+    })
   );
+})
 
-  router.get('/', async (ctx) => {
-    const shop = ctx.query.shop;
-    if (ACTIVE_SHOPIFY_SHOPS[shop] === undefined) {
-      ctx.redirect(`/auth?shop=${shop}`);
-    } else {
-      // Load app skeleton. Don't include sensitive information here!
-      ctx.body = '🎉';
-    }
-    // await handleRequest(ctx);
-  });
+server.use(
+  createShopifyAuth({
+    accessMode: "online",
+    authPath: "/auth",
+    async afterAuth(ctx) {
+      const { shop } = ctx.state.shopify;
+      const { host } = ctx.query;
+      // Check if the app is installed
+      // NOTE: You can replace with your own function to check if the shop is installed, or you can just remove it, but this is an extra check that can help prevent auth issues
+      if (isShopActive(shop)) {
+        // Redirect to app
+        ctx.redirect(`/?shop=${shop}&host=${host}`);
+      } else {
+        // Redirect to installation endpoint to get permanent access token
+        ctx.redirect(`/install/auth/?shop=${shop}&host=${host}`);
+      }
+    },
+  })
+);
 
-  router.post('/webhooks', async (ctx) => {
-    try {
-      await Shopify.Webhooks.Registry.process(ctx.req, ctx.res);
-      console.log(`Webhook processed, returned status code 200`);
-    } catch (error) {
-      console.log(`Failed to process webhook: ${error}`);
-    }
-  });
+
 
   router.get('(.*)', verifyRequest(), async (ctx) => {
     // Your application code goes here
