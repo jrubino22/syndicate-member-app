@@ -3,8 +3,8 @@ const dotenv = require('dotenv');
 const Koa = require('koa');
 const mongoose = require('mongoose');
 const next = require('next');
-const shopifyAuth = require('@shopify/koa-shopify-auth');
-const { verifyRequest } = require('@shopify/koa-shopify-auth');
+// const shopifyAuth = require('@shopify/koa-shopify-auth');
+const { default: shopifyAuth, verifyRequest } = require('@shopify/koa-shopify-auth');
 const { default: Shopify, ApiVersion } = require('@shopify/shopify-api');
 const Router = require('koa-router');
 const registeredIdModel = require('./models/registeredIdModel');
@@ -26,7 +26,7 @@ Shopify.Context.initialize({
   SCOPES: process.env.SHOPIFY_API_SCOPES.split(','),
   HOST_NAME: process.env.SHOPIFY_APP_URL.replace(/https:\/\//, ''),
   API_VERSION: ApiVersion.June16,
-  IS_EMBEDDED_APP: true,
+  IS_EMBEDDED_APP: false,
   SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
 });
 
