@@ -306,7 +306,7 @@ app.prepare().then(() => {
   }
   keepAwake('https://syndicate-member.herokuapp.com');
 
-  router.get('(.*)', handleRequest);
+  router.get('(.*)', verifyRequest);
   server.use(router.allowedMethods());
   server.use(router.routes());
 
