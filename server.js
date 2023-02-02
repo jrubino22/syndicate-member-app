@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 const Koa = require('koa');
 const mongoose = require('mongoose');
 const next = require('next');
-const { default: createShopifyAuth } = require('@shopify/koa-shopify-auth');
+const shopifyAuth = require('@shopify/koa-shopify-auth');
 const { verifyRequest } = require('@shopify/koa-shopify-auth');
 const { default: Shopify, ApiVersion } = require('@shopify/shopify-api');
 const Router = require('koa-router');
@@ -45,7 +45,7 @@ app.prepare().then(() => {
   server.keys = [Shopify.Context.API_SECRET_KEY];
 
   server.use(
-    createShopifyAuth({
+    shopifyAuth({
       afterAuth(ctx) {
         const { shop, scope } = ctx.state.shopify;
         ACTIVE_SHOPIFY_SHOPS[shop] = scope;
@@ -76,38 +76,22 @@ app.prepare().then(() => {
     // await handleRequest(ctx);
   });
 
+  router.post('/webhooks', async (ctx) => {
+    try {
+      await Shopify.Webhooks.Registry.process(ctx.req, ctx.res);
+      console.log(`Webhook processed, returned status code 200`);
+    } catch (error) {
+      console.log(`Failed to process webhook: ${error}`);
+    }
+  });
+
+  router.get('(.*)', verifyRequest(), async (ctx) => {
+    // Your application code goes here
+  
+
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);
 
-  router.get('/install', async (ctx) => {
-    
-    const session = await Shopify.Utils.loadCurrentSession(ctx.req, ctx.res);
-    const shop = session.shop;
-
-    // This shop hasn't been seen yet, go through OAuth to create a session
-    if (session === undefined || ACTIVE_SHOPIFY_SHOPS[shop] === undefined) {
-      ctx.redirect(`/auth?shop=${shop}`);
-      return;
-    }
-
-    const productIdStruct = JSON.parse(ctx.request.body).productId.split("/");
-    const productId = productIdStruct[productIdStruct.length - 1];
-
-    ACTIVE_SHOPIFY_SHOPS[shop].settings = { productId };
-
-    const client = new Shopify.Clients.Rest(session.shop, session.accessToken);
-
-    const productDetails = await client.get({
-      path: `products/${productId}`,
-      type: DataType.JSON,
-    });
-
-    ctx.body = {
-      status: "OK_SETTINGS",
-      data: productDetails.body.product,
-    };
-    ctx.status = 200;
-  });
 
   //get all unregistered cards
   router.get('/api/unregistered', async (ctx) => {
@@ -315,7 +299,7 @@ app.prepare().then(() => {
       console.log(error);
     }
   });
-
+});
   //keep dynos running
   function keepAwake(url) {
     setInterval(async function () {
@@ -325,7 +309,7 @@ app.prepare().then(() => {
   }
   keepAwake('https://syndicate-member.herokuapp.com');
 
-  router.get('(.*)', handleRequest);
+  // router.get('(.*)', handleRequest);
   server.use(router.allowedMethods());
   server.use(router.routes());
 
