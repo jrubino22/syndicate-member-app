@@ -40,30 +40,36 @@ const ACTIVE_SHOPIFY_SHOPS = {};
 
 app.prepare().then(() => {
   const server = new Koa();
-  server.use(cors());
+
   const router = new Router();
   server.keys = [Shopify.Context.API_SECRET_KEY];
 
   server.use(
     shopifyAuth({
-      afterAuth(ctx) {
-        const { shop, scope } = ctx.state.shopify;
-        ACTIVE_SHOPIFY_SHOPS[shop] = scope;
+     async  afterAuth(ctx) {
+        const { shop, accessToken } = ctx.state.shopify;
+        ACTIVE_SHOPIFY_SHOPS[shop] = true;
 
-        if (ACTIVE_SHOPIFY_SHOPS[shop]) {
-          ctx.redirect(`https://${shop}/admin/apps`);
-        } else {
-          ctx.redirect(`/?shop=${shop}`);
+        const response = await Shopify.Webhooks.Registry.register({
+          shop,
+          accessToken,
+          path: '/webhooks',
+          topic: 'APP_UNINSTALLED',
+          webhookHandler: async (topic, shop, body) =>
+            delete ACTIVE_SHOPIFY_SHOPS[shop],
+        });
+  
+        if (!response.success) {
+          console.log(
+            `Failed to register APP_UNINSTALLED webhook: ${response.result}`,
+          );
         }
+  
+        // Redirect to app with shop parameter upon auth
+        ctx.redirect(`/?shop=${shop}`);
       },
-    })
+    }),
   );
-
-  const handleRequest = async (ctx) => {
-    await handle(ctx.req, ctx.res);
-    ctx.respond = true;
-    ctx.res.statusCode = 200;
-  };
 
   router.get('/', async (ctx) => {
     const shop = ctx.query.shop;
@@ -89,8 +95,8 @@ app.prepare().then(() => {
     // Your application code goes here
   
 
-  router.get('(/_next/static/.*)', handleRequest);
-  router.get('/_next/webpack-hmr', handleRequest);
+  router.get('(/_next/static/.*)', verifyRequest);
+  router.get('/_next/webpack-hmr', verifyRequest);
 
 
   //get all unregistered cards
