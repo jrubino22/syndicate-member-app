@@ -36,6 +36,8 @@ const handleRequest = async (ctx) => {
   ctx.res.statusCode = 200;
 };
 
+const verifyApiRequest = verifyRequest({ returnHeader: true })
+
 const port = process.env.PORT || 5000;
 const dev = process.env.NODE_ENV !== 'production';
 const prod = process.env.NODE_ENV === 'production';
@@ -134,7 +136,7 @@ app.prepare().then(() => {
   });
 
   // get all members
-  router.get('/api/members', verifyRequest(), async (ctx) => {
+  router.get('/api/members', verifyApiRequest, async (ctx) => {
     ctx.body = await registeredIdModel.find();
   });
 
