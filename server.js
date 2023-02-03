@@ -51,8 +51,8 @@ app.prepare().then(() => {
   const router = new Router();
   server.keys = [Shopify.Context.API_SECRET_KEY];
 
-  router.get('(/_next/static/.*)', verifyRequest);
-  router.get('/_next/webpack-hmr', verifyRequest);
+  router.get('(/_next/static/.*)', handleRequest);
+  router.get('/_next/webpack-hmr', handleRequest);
 
   router.get('/install/auth', async (ctx) => {
     server.use(
