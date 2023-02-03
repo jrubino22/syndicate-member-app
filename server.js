@@ -3,8 +3,6 @@ const dotenv = require('dotenv');
 const Koa = require('koa');
 const mongoose = require('mongoose');
 const next = require('next');
-// const shopifyAuth = require('@shopify/koa-shopify-auth');
-const { default: shopifyAuth } = require('@shopify/koa-shopify-auth');
 const { default: Shopify, ApiVersion } = require('@shopify/shopify-api');
 const Router = require('koa-router');
 const registeredIdModel = require('./models/registeredIdModel');
@@ -13,7 +11,8 @@ const bodyParser = require('koa-body');
 const cors = require('@koa/cors');
 const google_cal = require('./google_calendar');
 const shopifyApiCalls = require('./shopifyApiCalls');
-import { createShopifyAuth, verifyRequest } from 'simple-koa-shopify-auth';
+const { createShopifyAuth, verifyRequest} = require('simple-koa-shopify-auth')
+
 
 dotenv.config();
 
