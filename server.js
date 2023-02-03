@@ -31,6 +31,7 @@ Shopify.Context.initialize({
 });
 
 const handleRequest = async (ctx) => {
+  verifyRequest
   await handle(ctx.req, ctx.res);
   ctx.respond = true;
   ctx.res.statusCode = 200;
@@ -311,7 +312,7 @@ app.prepare().then(() => {
   }
   keepAwake('https://syndicate-member.herokuapp.com');
 
-  router.get('(.*)', verifyRequest);
+  router.get('(.*)', handleRequest);
   server.use(router.allowedMethods());
   server.use(router.routes());
 
