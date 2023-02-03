@@ -22,7 +22,7 @@ mongoose.connect(process.env.MONGO_URL, () => {
 Shopify.Context.initialize({
   API_KEY: process.env.SHOPIFY_API_KEY,
   API_SECRET_KEY: process.env.SHOPIFY_API_SECRET,
-  SCOPES: [write_customers,read_customers],
+  SCOPES: ['write_customers', 'read_customers'],
   HOST_NAME: process.env.SHOPIFY_APP_URL.replace(/https:\/\//, ''),
   API_VERSION: ApiVersion.June16,
   IS_EMBEDDED_APP: true,
