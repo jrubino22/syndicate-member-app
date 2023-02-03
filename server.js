@@ -79,7 +79,7 @@ app.prepare().then(() => {
     server.use(
       createShopifyAuth({
         accessMode: 'online',
-        authPath: '/auth',
+        authPath: '/',
         async afterAuth(ctx) {
           const { shop } = ctx.state.shopify;
           const { host } = ctx.query;
