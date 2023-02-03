@@ -50,6 +50,9 @@ app.prepare().then(() => {
   const router = new Router();
   server.keys = [Shopify.Context.API_SECRET_KEY];
 
+  router.get('(/_next/static/.*)', verifyRequest);
+  router.get('/_next/webpack-hmr', verifyRequest);
+
   router.get('/install', async (ctx) => {
     server.use(
       createShopifyAuth({
@@ -92,9 +95,6 @@ app.prepare().then(() => {
       })
     );
   });
-
-  router.get('(/_next/static/.*)', verifyRequest);
-  router.get('/_next/webpack-hmr', verifyRequest);
 
   //get all unregistered cards
   router.get('/api/unregistered', async (ctx) => {
