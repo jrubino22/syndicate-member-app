@@ -53,7 +53,7 @@ app.prepare().then(() => {
   router.get('(/_next/static/.*)', verifyRequest);
   router.get('/_next/webpack-hmr', verifyRequest);
 
-  router.get('/install', async (ctx) => {
+  router.get('/install/auth', async (ctx) => {
     server.use(
       createShopifyAuth({
         accessMode: 'offline',
