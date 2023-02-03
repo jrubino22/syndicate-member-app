@@ -61,8 +61,7 @@ app.prepare().then(() => {
         accessMode: 'offline',
         authPath: '/install/auth',
         async afterAuth(ctx) {
-          const shop = process.env.SHOPIFY_STORE;
-          const accessToken  = process.env.ACCESS_TOKEN;
+          const { shop, accessToken } = ctx.state.shopify;
           const { host } = ctx.query;
           if (!accessToken) {
             // This can happen if the browser interferes with the auth flow
@@ -82,7 +81,7 @@ app.prepare().then(() => {
         accessMode: 'online',
         authPath: '/auth',
         async afterAuth(ctx) {
-          const shop = process.env.SHOPIFY_STORE;
+          const { shop } = ctx.state.shopify;
           const { host } = ctx.query;
           // Check if the app is installed
           // NOTE: You can replace with your own function to check if the shop is installed, or you can just remove it, but this is an extra check that can help prevent auth issues
