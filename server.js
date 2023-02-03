@@ -53,7 +53,7 @@ app.prepare().then(() => {
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);
 
-  router.get('/install', async (ctx) => {
+  router.get('/install', verifyRequest(), async (ctx) => {
     console.log('checkpoint1');
     server.use(
       createShopifyAuth({
