@@ -53,7 +53,7 @@ app.prepare().then(() => {
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);
 
-  router.get('/install', verifyRequest(), async (ctx) => {
+  router.get('/install', async (ctx) => {
     console.log('checkpoint1');
     server.use(
       createShopifyAuth({
@@ -77,7 +77,7 @@ app.prepare().then(() => {
     );
   });
 
-  router.get('(/auth)', verifyRequest(), async (ctx) => {
+  router.get('(/auth)', async (ctx) => {
     server.use(
       createShopifyAuth({
         accessMode: 'online',
