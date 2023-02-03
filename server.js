@@ -62,6 +62,7 @@ app.prepare().then(() => {
         async afterAuth(ctx) {
           const { shop, accessToken } = ctx.state.shopify;
           const { host } = ctx.query;
+          console.log("shop", shop, accessToken)
           if (!accessToken) {
             // This can happen if the browser interferes with the auth flow
             ctx.response.status = 500;
