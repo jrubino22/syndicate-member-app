@@ -58,7 +58,7 @@ app.prepare().then(() => {
     server.use(
       createShopifyAuth({
         accessMode: 'offline',
-        authPath: '/install/auth',
+        authPath: '/auth',
         async afterAuth(ctx) {
           const { shop, accessToken } = ctx.state.shopify;
           const { host } = ctx.query;
@@ -97,7 +97,7 @@ app.prepare().then(() => {
     );
   });
 
-  //get all unregistered cards
+  
   router.get('/api/unregistered', async (ctx) => {
     ctx.body = await unregisteredIdModel.find();
   });
