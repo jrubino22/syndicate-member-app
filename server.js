@@ -11,8 +11,7 @@ const bodyParser = require('koa-body');
 const cors = require('@koa/cors');
 const google_cal = require('./google_calendar');
 const shopifyApiCalls = require('./shopifyApiCalls');
-const { createShopifyAuth, verifyRequest} = require('simple-koa-shopify-auth')
-
+const { createShopifyAuth, verifyRequest } = require('simple-koa-shopify-auth');
 
 dotenv.config();
 
@@ -31,7 +30,7 @@ Shopify.Context.initialize({
 });
 
 const handleRequest = async (ctx) => {
-  verifyRequest
+  verifyRequest();
   await handle(ctx.req, ctx.res);
   ctx.respond = true;
   ctx.res.statusCode = 200;
@@ -54,15 +53,15 @@ app.prepare().then(() => {
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);
 
-  router.get('/install/auth', async (ctx) => {
-    console.log("checkpoint1")
+  router.get('/install', async (ctx) => {
+    console.log('checkpoint1');
     server.use(
       createShopifyAuth({
         accessMode: 'offline',
         authPath: '/auth',
-        async afterAuth(ctx) {        
+        async afterAuth(ctx) {
           const { shop, accessToken } = ctx.state.shopify;
-          console.log("shop", shop, accessToken)
+          console.log('shop', shop, accessToken);
           const { host } = ctx.query;
           if (!accessToken) {
             // This can happen if the browser interferes with the auth flow
@@ -71,6 +70,7 @@ app.prepare().then(() => {
             return;
           }
           // Redirect to user auth endpoint, to get user's online token
+          ctx.response.body = 'found';
           ctx.redirect(`/auth?shop=${shop}&host=${host}`);
         },
       })
@@ -99,7 +99,6 @@ app.prepare().then(() => {
     );
   });
 
-  
   router.get('/api/unregistered', async (ctx) => {
     ctx.body = await unregisteredIdModel.find();
   });
