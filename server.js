@@ -134,7 +134,7 @@ app.prepare().then(() => {
   });
 
   // get all members
-  router.get('/api/members', async (ctx) => {
+  router.get('/api/members', verifyRequest(), async (ctx) => {
     ctx.body = await registeredIdModel.find();
   });
 
