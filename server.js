@@ -11,8 +11,7 @@ const bodyParser = require('koa-body');
 const cors = require('@koa/cors');
 const google_cal = require('./google_calendar');
 const shopifyApiCalls = require('./shopifyApiCalls');
-const createShopifyAuth = require('simple-koa-shopify-auth')
-const { verifyRequest } = require('simple-koa-shopify-auth')
+const {createShopifyAuth, verifyRequest } = require('simple-koa-shopify-auth')
 
 dotenv.config();
 
