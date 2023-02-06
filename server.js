@@ -55,6 +55,8 @@ app.prepare().then(() => {
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);
 
+  server.use(session({ secure: true, sameSite: 'none' }, server));
+
   server.use(
     createShopifyAuth({
       accessMode: 'offline',
