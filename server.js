@@ -11,7 +11,7 @@ const bodyParser = require('koa-body');
 const cors = require('@koa/cors');
 const google_cal = require('./google_calendar');
 const shopifyApiCalls = require('./shopifyApiCalls');
-const { createShopifyAuth, verifyRequest } = require('simple-koa-shopify-auth');
+import { createShopifyAuth, verifyRequest } from 'simple-koa-shopify-auth';
 
 dotenv.config();
 
@@ -36,7 +36,7 @@ const handleRequest = async (ctx) => {
   ctx.res.statusCode = 200;
 };
 
-const verifyApiRequest = verifyRequest({ returnHeader: true })
+const verifyApiRequest = verifyRequest({ returnHeader: true });
 
 const port = process.env.PORT || 5000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -55,46 +55,45 @@ app.prepare().then(() => {
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);
 
+  server.use(
+    createShopifyAuth({
+      accessMode: 'offline',
+      authPath: '/install/auth',
+      async afterAuth(ctx) {
+        const { shop, accessToken } = ctx.state.shopify;
+        const { host } = ctx.query;
+        if (!accessToken) {
+          // This can happen if the browser interferes with the auth flow
+          ctx.response.status = 500;
+          ctx.response.body = 'Failed to get access token! Please try again.';
+          return;
+        }
+        // Redirect to user auth endpoint, to get user's online token
+        ctx.response.body = 'found';
+        ctx.redirect(`/auth?shop=${shop}&host=${host}`);
+      },
+    })
+  );
 
-    server.use(
-      createShopifyAuth({
-        accessMode: 'offline',
-        authPath: '/install/auth',
-        async afterAuth(ctx) {
-          const { shop, accessToken } = ctx.state.shopify;
-          const { host } = ctx.query;
-          if (!accessToken) {
-            // This can happen if the browser interferes with the auth flow
-            ctx.response.status = 500;
-            ctx.response.body = 'Failed to get access token! Please try again.';
-            return;
-          }
-          // Redirect to user auth endpoint, to get user's online token
-          ctx.response.body = 'found';
-          ctx.redirect(`/auth?shop=${shop}&host=${host}`);
-        },
-      })
-    );
- 
-    server.use(
-      createShopifyAuth({
-        accessMode: 'online',
-        authPath: '/auth',
-        async afterAuth(ctx) {
-          const { shop } = ctx.state.shopify;
-          const { host } = ctx.query;
-          // Check if the app is installed
-          // NOTE: You can replace with your own function to check if the shop is installed, or you can just remove it, but this is an extra check that can help prevent auth issues
-          if (isShopActive(shop)) {
-            // Redirect to app
-            ctx.redirect(`/?shop=${shop}&host=${host}`);
-          } else {
-            // Redirect to installation endpoint to get permanent access token
-            ctx.redirect(`/install/auth/?shop=${shop}&host=${host}`);
-          }
-        },
-      })
-    );
+  server.use(
+    createShopifyAuth({
+      accessMode: 'online',
+      authPath: '/auth',
+      async afterAuth(ctx) {
+        const { shop } = ctx.state.shopify;
+        const { host } = ctx.query;
+        // Check if the app is installed
+        // NOTE: You can replace with your own function to check if the shop is installed, or you can just remove it, but this is an extra check that can help prevent auth issues
+        if (isShopActive(shop)) {
+          // Redirect to app
+          ctx.redirect(`/?shop=${shop}&host=${host}`);
+        } else {
+          // Redirect to installation endpoint to get permanent access token
+          ctx.redirect(`/install/auth/?shop=${shop}&host=${host}`);
+        }
+      },
+    })
+  );
 
   router.get('/api/unregistered', async (ctx) => {
     ctx.body = await unregisteredIdModel.find();
