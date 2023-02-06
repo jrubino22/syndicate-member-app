@@ -8,4 +8,4 @@ const MyApp = ({ Component, pageProps }) => {
   )
 }
 
-module.exports = MyApp
+export default MyApp
