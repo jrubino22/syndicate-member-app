@@ -3,7 +3,7 @@ const dotenv = require('dotenv');
 const Koa = require('koa');
 const mongoose = require('mongoose');
 const next = require('next');
-const { default: Shopify, ApiVersion } = require('@shopify/shopify-api');
+const { Shopify, ApiVersion } = require('@shopify/shopify-api');
 const Router = require('koa-router');
 const registeredIdModel = require('./models/registeredIdModel');
 const unregisteredIdModel = require('./models/unregisteredIdModel');
@@ -135,7 +135,7 @@ app.prepare().then(() => {
   });
 
   // get all members
-  router.get('/api/members', verifyApiRequest, async (ctx) => {
+  router.get('/api/members', async (ctx) => {
     ctx.body = await registeredIdModel.find();
   });
 
