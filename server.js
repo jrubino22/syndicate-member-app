@@ -15,7 +15,6 @@ const shopifyApiCalls = require('./shopifyApiCalls');
 const createShopifyAuth = require('simple-koa-shopify-auth')
 const { verifyRequest } = require('simple-koa-shopify-auth')
 
-
 dotenv.config();
 
 mongoose.connect(process.env.MONGO_URL, () => {
