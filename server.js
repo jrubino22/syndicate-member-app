@@ -110,6 +110,11 @@ router.get('/shopify/install', async (ctx) => {
 // Compare the HMAC in the query string with the calculated HMAC
 if (hmacDigest !== hmac) {
   // Return an error if the HMACs do not match
+  if (!ctx.request.body || !ctx.request.body.property) {
+    throw new Error('Invalid request body');
+  }
+  
+  const { property } = ctx.request.body;
   ctx.status = 400;
   ctx.body = 'HMAC validation failed';
   return;
