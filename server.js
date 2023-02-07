@@ -1,4 +1,5 @@
 const fetch = require('isomorphic-fetch');
+const queryString = require('query-string');
 const dotenv = require('dotenv');
 const Koa = require('koa');
 const mongoose = require('mongoose');
@@ -61,18 +62,26 @@ app.prepare().then(() => {
     // Extract the query parameters from the request
     const { shop, hmac, code, state } = ctx.query;
   
-    const hmacDigest = crypto
-    .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
-    .update(queryString)
-    .digest('hex');
+    // Generate the query string from the parameters
+    const queryStringParams = queryString.stringify({
+      shop,
+      hmac,
+      code,
+      state
+    });
   
-  // Compare the HMAC in the query string with the calculated HMAC
-  if (hmacDigest !== hmac) {
-    // Return an error if the HMACs do not match
-    ctx.status = 400;
-    ctx.body = 'HMAC validation failed';
-    return;
-  }
+    const hmacDigest = crypto
+      .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
+      .update(queryStringParams)
+      .digest('hex');
+  
+    // Compare the HMAC in the query string with the calculated HMAC
+    if (hmacDigest !== hmac) {
+      // Return an error if the HMACs do not match
+      ctx.status = 400;
+      ctx.body = 'HMAC validation failed';
+      return;
+    }
   
     // Define the endpoint for the Shopify OAuth authorization request
     const response = await fetch(`https://${shop}/admin/oauth/access_token`, {
@@ -96,29 +105,32 @@ app.prepare().then(() => {
     // Redirect the user back to the custom app
     ctx.redirect('/');
   });
-
-  // Define the endpoint for the Shopify app installation request
-router.get('/shopify/install', async (ctx) => {
-  // Extract the shop name from the request body
-  const { shop, hmac } = ctx.request.body;
-
-  const hmacDigest = crypto
-  .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
-  .update(queryString)
-  .digest('hex');
-
-// Compare the HMAC in the query string with the calculated HMAC
-if (hmacDigest !== hmac) {
-  // Return an error if the HMACs do not match
-  if (!ctx.request.body || !ctx.request.body.property) {
-    throw new Error('Invalid request body');
-  }
   
-  const { property } = ctx.request.body;
-  ctx.status = 400;
-  ctx.body = 'HMAC validation failed';
-  return;
-}
+  // Define the endpoint for the Shopify app installation request
+  router.get('/shopify/install', async (ctx) => {
+    // Extract the query parameters from the request
+    const { shop, hmac } = ctx.query;
+  
+    // Generate the query string from the parameters
+    const queryStringParams = queryString.stringify({
+      shop,
+      hmac
+    });
+  
+    const hmacDigest = crypto
+      .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
+      .update(queryStringParams)
+      .digest('hex');
+  
+    // Compare the HMAC in the query string with the calculated HMAC
+    if (hmacDigest !== hmac) {
+      // Return an error if the HMACs do not match
+      ctx.status = 400;
+      ctx.body = 'HMAC validation failed';
+      return;
+    }
+  
+    // Store the shop name for use in future requests
 
   // Store the shop name for use in future requests
   ctx.session.shopName = shop;
