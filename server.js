@@ -62,9 +62,29 @@ app.prepare().then(() => {
     const { shop, hmac, code, state } = ctx.query;
   
     // Validate the HMAC to ensure the request is from Shopify
-    // (HMAC validation logic goes here)
+    const map = Object.assign({}, ctx.query);
+    delete map['hmac'];
+    const message = querystring.stringify(map);
+    const providedHmac = Buffer.from(hmac, 'utf-8');
+    const generatedHash = Buffer.from(
+      crypto
+        .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
+        .update(message)
+        .digest('hex'),
+      'utf-8'
+    );
+    let hashEquals = false;
+
+    try {
+      hashEquals = crypto.timingSafeEqual(generatedHash, providedHmac)
+    } catch (e) {
+      hashEquals = false;
+    };
+
+    if (!hashEquals) {
+      return ctx.status = 400;
+    }
   
-    
     // Define the endpoint for the Shopify OAuth authorization request
     const response = await fetch(`https://${shop}/admin/oauth/access_token`, {
       method: 'POST',
@@ -88,7 +108,6 @@ app.prepare().then(() => {
     ctx.redirect('/');
   });
 
-
   // Define the endpoint for the Shopify app installation request
 router.post('/shopify/install', async (ctx) => {
   // Extract the shop name from the request body
@@ -98,7 +117,7 @@ router.post('/shopify/install', async (ctx) => {
   ctx.session.shopName = shop;
 
   // Redirect the user to the Shopify OAuth authorization request
-  const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_APP_KEY}&scope=${process.env.SHOPIFY_APP_SCOPES}&redirect_uri=${process.env.SHOPIFY_APP_REDIRECT_URI}`;
+  const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${process.env.SHOPIFY_APP_REDIRECT_URL}`;
   ctx.redirect(installUrl);
 });
 
