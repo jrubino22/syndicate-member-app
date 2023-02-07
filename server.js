@@ -30,7 +30,12 @@ Shopify.Context.initialize({
   SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
 });
 
-
+const handleRequest = async (ctx) => {
+  // verifyRequest();
+  await handle(ctx.req, ctx.res);
+  ctx.respond = true;
+  ctx.res.statusCode = 200;
+};
 
 // const verifyApiRequest = verifyRequest({ returnHeader: true });
 
@@ -39,12 +44,7 @@ const dev = process.env.NODE_ENV !== 'production';
 const prod = process.env.NODE_ENV === 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
-const handleRequest = async (ctx) => {
-  // verifyRequest();
-  await handle(ctx.req, ctx.res);
-  ctx.respond = true;
-  ctx.res.statusCode = 200;
-};
+
 
 const ACTIVE_SHOPIFY_SHOPS = {};
 
