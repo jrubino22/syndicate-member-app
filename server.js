@@ -97,8 +97,8 @@ app.prepare().then(() => {
         code,
       }),
     });
-  
     const responseJson = await response.json();
+    console.log("auth response",  responseJson)
   
     // Store the access token and shop name for use in future requests
     ctx.session.accessToken = responseJson.access_token;
@@ -109,7 +109,7 @@ app.prepare().then(() => {
   });
 
   // Define the endpoint for the Shopify app installation request
-router.post('/shopify/install', async (ctx) => {
+router.get('/shopify/install', async (ctx) => {
   // Extract the shop name from the request body
   const { shop } = ctx.request.body;
 
@@ -117,7 +117,7 @@ router.post('/shopify/install', async (ctx) => {
   ctx.session.shopName = shop;
 
   // Redirect the user to the Shopify OAuth authorization request
-  const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${process.env.SHOPIFY_APP_REDIRECT_URL}`;
+  const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${/shopify/auth}`;
   ctx.redirect(installUrl);
 });
 
