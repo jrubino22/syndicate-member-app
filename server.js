@@ -111,7 +111,20 @@ app.prepare().then(() => {
   // Define the endpoint for the Shopify app installation request
 router.get('/shopify/install', async (ctx) => {
   // Extract the shop name from the request body
-  const { shop } = ctx.request.body;
+  const { shop, hmac } = ctx.request.body;
+
+  const hmacDigest = crypto
+  .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
+  .update(queryString)
+  .digest('hex');
+
+// Compare the HMAC in the query string with the calculated HMAC
+if (hmacDigest !== hmac) {
+  // Return an error if the HMACs do not match
+  ctx.status = 400;
+  ctx.body = 'HMAC validation failed';
+  return;
+}
 
   // Store the shop name for use in future requests
   ctx.session.shopName = shop;
