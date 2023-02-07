@@ -30,13 +30,13 @@ Shopify.Context.initialize({
 });
 
 const handleRequest = async (ctx) => {
-  verifyRequest();
+  // verifyRequest();
   await handle(ctx.req, ctx.res);
   ctx.respond = true;
   ctx.res.statusCode = 200;
 };
 
-const verifyApiRequest = verifyRequest({ returnHeader: true });
+// const verifyApiRequest = verifyRequest({ returnHeader: true });
 
 const port = process.env.PORT || 5000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -72,8 +72,8 @@ app.prepare().then(() => {
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        client_id: process.env.SHOPIFY_APP_KEY,
-        client_secret: process.env.SHOPIFY_APP_SECRET,
+        client_id: process.env.SHOPIFY_API_KEY,
+        client_secret: process.env.SHOPIFY_API_SECRET,
         code,
       }),
     });
