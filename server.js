@@ -55,7 +55,7 @@ app.prepare().then(() => {
   const router = new Router();
   server.keys = [Shopify.Context.API_SECRET_KEY];
 
-  
+  app.use(cors());
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);
 
