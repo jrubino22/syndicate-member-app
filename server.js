@@ -61,29 +61,18 @@ app.prepare().then(() => {
     // Extract the query parameters from the request
     const { shop, hmac, code, state } = ctx.query;
   
-    // Validate the HMAC to ensure the request is from Shopify
-    const map = Object.assign({}, ctx.query);
-    delete map['hmac'];
-    const message = querystring.stringify(map);
-    const providedHmac = Buffer.from(hmac, 'utf-8');
-    const generatedHash = Buffer.from(
-      crypto
-        .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
-        .update(message)
-        .digest('hex'),
-      'utf-8'
-    );
-    let hashEquals = false;
-
-    try {
-      hashEquals = crypto.timingSafeEqual(generatedHash, providedHmac)
-    } catch (e) {
-      hashEquals = false;
-    };
-
-    if (!hashEquals) {
-      return ctx.status = 400;
-    }
+    const hmacDigest = crypto
+    .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
+    .update(queryString)
+    .digest('hex');
+  
+  // Compare the HMAC in the query string with the calculated HMAC
+  if (hmacDigest !== hmac) {
+    // Return an error if the HMACs do not match
+    ctx.status = 400;
+    ctx.body = 'HMAC validation failed';
+    return;
+  }
   
     // Define the endpoint for the Shopify OAuth authorization request
     const response = await fetch(`https://${shop}/admin/oauth/access_token`, {
