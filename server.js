@@ -101,7 +101,7 @@ app.prepare().then(() => {
   // Define the endpoint for the Shopify app installation request
   router.get("/shopify/install", async (ctx) => {
     // Extract the shop name from the request body
-    const { shop, hmac } = ctx.request.body;
+    const { shop, hmac } = ctx.query;
   
     const queryString = `shop=${shop}`;
     const hmacDigest = HmacSHA256(queryString, process.env.SHOPIFY_API_SECRET).toString();
