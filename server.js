@@ -13,7 +13,7 @@ const cors = require('@koa/cors');
 const google_cal = require('./google_calendar');
 const shopifyApiCalls = require('./shopifyApiCalls');
 const { HmacSHA256 } = require("crypto-js");
-const {createShopifyAuth, verifyRequest } = require('simple-koa-shopify-auth')
+const shopifyAuth = require('simple-koa-shopify-auth')
 
 dotenv.config();
 
@@ -60,69 +60,32 @@ app.prepare().then(() => {
   router.get('/_next/webpack-hmr', handleRequest);
 
 
-  router.get("/shopify/auth", async (ctx) => {
-    // Extract the query parameters from the request
-    const { shop, hmac, code, state } = ctx.query;
+  const clientId = process.env.SHOPIFY_API_KEY;
+  const clientSecret = process.env.SHOPIFY_API_SECRET;
   
-    const queryString = `code=${code}&shop=${shop}&state=${state}`;
-    const hmacDigest = HmacSHA256(queryString, process.env.SHOPIFY_API_SECRET).toString();
-  
-    // Compare the HMAC in the query string with the calculated HMAC
-    if (hmacDigest !== hmac) {
-      // Return an error if the HMACs do not match
-      ctx.status = 400;
-      ctx.body = "HMAC validation failed";
-      return;
-    }
-  
-    // Define the endpoint for the Shopify OAuth authorization request
-    const response = await fetch(`https://${shop}/admin/oauth/access_token`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        client_id: process.env.SHOPIFY_API_KEY,
-        client_secret: process.env.SHOPIFY_API_SECRET,
-        code,
-      }),
-    });
-    const responseJson = await response.json();
-    console.log("auth response", responseJson);
-  
-    // Store the access token and shop name for use in future requests
-    ctx.session.accessToken = responseJson.access_token;
-    ctx.session.shopName = shop;
-  
-    // Redirect the user back to the custom app
-    ctx.redirect("/");
-  });
-  
-  // Define the endpoint for the Shopify app installation request
-  router.get("/shopify/install", async (ctx) => {
-    // Extract the shop name from the request body
-    const { shop, hmac } = ctx.query;
-  
-    const queryString = `shop=${shop}`;
-    const hmacDigest = HmacSHA256(queryString, process.env.SHOPIFY_API_SECRET).toString();
-  
-    // // Compare the HMAC in the query string with the calculated HMAC
-    // if (hmacDigest !== hmac) {
-    //   // Return an error if the HMACs do not match
-    //   console.log(hmacDigest, hmac)
-    //   ctx.status = 400;
-    //   ctx.body = "HMAC validation failed";
-    //   return;
-    // }
-  
-    // Store the shop name for use in future requests
-    ctx.session.shopName = shop;
-  
-    // Redirect the user to the Shopify OAuth authorization request
-    const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${process.env.SHOPIFY_APP_REDIRECT_URL}`;
+  router.get('/install', async ctx => {
+    const shop = ctx.query.shop;
+    const redirectUri = 'http://localhost:3000/auth/callback';
+    const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_products&redirect_uri=${redirectUri}`;
     ctx.redirect(installUrl);
   });
-
+  
+  router.get('/auth/callback', async ctx => {
+    const { code, shop } = ctx.query;
+    const accessTokenResponse = await fetch(`https://${shop}/admin/oauth/access_token`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        client_id: clientId,
+        client_secret: clientSecret,
+        code
+      })
+    });
+    const accessTokenData = await accessTokenResponse.json();
+    const accessToken = accessTokenData.access_token;
+    // Use the access token to make API calls
+    // ...
+  });
 
 
   router.get('/api/unregistered', async (ctx) => {
