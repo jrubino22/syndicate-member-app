@@ -27,7 +27,7 @@ Shopify.Context.initialize({
   SCOPES: ['write_customers','read_customers'],
   HOST_NAME: process.env.SHOPIFY_APP_URL.replace(/https:\/\//, ''),
   API_VERSION: ApiVersion.June16,
-  IS_EMBEDDED_APP: true,
+  IS_EMBEDDED_APP: false,
   SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
 });
 
