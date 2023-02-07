@@ -85,6 +85,7 @@ app.prepare().then(() => {
     const accessToken = accessTokenData.access_token;
     // Use the access token to make API calls
     // ...
+    ctx.redirect('https://syndicate-member.herokuapp.com');
   });
 
 
