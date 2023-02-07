@@ -117,7 +117,7 @@ router.get('/shopify/install', async (ctx) => {
   ctx.session.shopName = shop;
 
   // Redirect the user to the Shopify OAuth authorization request
-  const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${/shopify/auth}`;
+  const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${process.env.SHOPIFY_APP_REDIRECT_URL}`;
   ctx.redirect(installUrl);
 });
 
