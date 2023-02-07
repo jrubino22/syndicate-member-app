@@ -23,19 +23,14 @@ mongoose.connect(process.env.MONGO_URL, () => {
 Shopify.Context.initialize({
   API_KEY: process.env.SHOPIFY_API_KEY,
   API_SECRET_KEY: process.env.SHOPIFY_API_SECRET,
-  SCOPES: ['write_customers', 'read_customers'],
+  SCOPES: ['write_customers','read_customers'],
   HOST_NAME: process.env.SHOPIFY_APP_URL.replace(/https:\/\//, ''),
   API_VERSION: ApiVersion.June16,
   IS_EMBEDDED_APP: true,
   SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
 });
 
-const handleRequest = async (ctx) => {
-  // verifyRequest();
-  await handle(ctx.req, ctx.res);
-  ctx.respond = true;
-  ctx.res.statusCode = 200;
-};
+
 
 // const verifyApiRequest = verifyRequest({ returnHeader: true });
 
@@ -44,6 +39,12 @@ const dev = process.env.NODE_ENV !== 'production';
 const prod = process.env.NODE_ENV === 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
+const handleRequest = async (ctx) => {
+  // verifyRequest();
+  await handle(ctx.req, ctx.res);
+  ctx.respond = true;
+  ctx.res.statusCode = 200;
+};
 
 const ACTIVE_SHOPIFY_SHOPS = {};
 
@@ -53,132 +54,95 @@ app.prepare().then(() => {
   const router = new Router();
   server.keys = [Shopify.Context.API_SECRET_KEY];
 
+  
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);
 
-
-
   router.get('/shopify/auth', async (ctx) => {
-    // Extract the query parameters from the request
-    const { shop, hmac, code, state } = ctx.query;
-  
-    // Generate the query string from the parameters
-    const queryStringParams = queryString.stringify({
-      shop,
-      hmac,
-      code,
-      state
-    });
-  
-    const hmacDigest = crypto
-      .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
-      .update(queryStringParams)
-      .digest('hex');
-  
-    // Compare the HMAC in the query string with the calculated HMAC
-    if (hmacDigest !== hmac) {
-      // Return an error if the HMACs do not match
-      ctx.status = 400;
-      ctx.body = 'HMAC validation failed';
-      return;
-    }
-  
-    // Define the endpoint for the Shopify OAuth authorization request
-    const response = await fetch(`https://${shop}/admin/oauth/access_token`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({
-        client_id: process.env.SHOPIFY_API_KEY,
-        client_secret: process.env.SHOPIFY_API_SECRET,
-        code,
-      }),
-    });
-    const responseJson = await response.json();
-    console.log("auth response",  responseJson)
-  
-    // Store the access token and shop name for use in future requests
-    ctx.session.accessToken = responseJson.access_token;
-    ctx.session.shopName = shop;
-  
-    // Redirect the user back to the custom app
-    ctx.redirect('/');
-  });
-  
-  // Define the endpoint for the Shopify app installation request
-  router.get('/shopify/install', async (ctx) => {
-    // Extract the query parameters from the request
-    const { shop, hmac } = ctx.query;
-  
-    // Generate the query string from the parameters
-    const queryStringParams = queryString.stringify({
-      shop,
-      hmac
-    });
-  
-    const hmacDigest = crypto
-      .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
-      .update(queryStringParams)
-      .digest('hex');
-  
-    // Compare the HMAC in the query string with the calculated HMAC
-    if (hmacDigest !== hmac) {
-      // Return an error if the HMACs do not match
-      ctx.status = 400;
-      ctx.body = 'HMAC validation failed';
-      return;
-    }
-  
-    // Store the shop name for use in future requests
+  // Extract the query parameters from the request
+  const { shop, hmac, code, state } = ctx.query;
 
-  // Store the shop name for use in future requests
+  // Generate the query string from the parameters
+  const queryStringParams = queryString.stringify({
+    shop,
+    hmac,
+    code,
+    state
+  });
+
+  const hmacDigest = crypto
+    .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
+    .update(queryStringParams)
+    .digest('hex');
+
+  // Compare the HMAC in the query string with the calculated HMAC
+  if (hmacDigest !== hmac) {
+    // Return an error if the HMACs do not match
+    ctx.status = 400;
+    ctx.body = 'HMAC validation failed';
+    return;
+  }
+
+  // Define the endpoint for the Shopify OAuth authorization request
+  const response = await fetch(`https://${shop}/admin/oauth/access_token`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+    },
+    body: JSON.stringify({
+      client_id: process.env.SHOPIFY_API_KEY,
+      client_secret: process.env.SHOPIFY_API_SECRET,
+      code,
+    }),
+  });
+  const responseJson = await response.json();
+  console.log("auth response",  responseJson)
+
+  // Store the access token and shop name for use in future requests
+  ctx.session.accessToken = responseJson.access_token;
   ctx.session.shopName = shop;
 
-  // Redirect the user to the Shopify OAuth authorization request
-  const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${process.env.SHOPIFY_APP_REDIRECT_URL}`;
-  ctx.redirect(installUrl);
+  // Redirect the user back to the custom app
+  ctx.redirect('/');
 });
 
-  // server.use(
-  //   createShopifyAuth({
-  //     accessMode: 'offline',
-  //     authPath: '/install/auth',
-  //     async afterAuth(ctx) {
-  //       const { shop, accessToken } = ctx.state.shopify;
-  //       const { host } = ctx.query;
-  //       if (!accessToken) {
-  //         // This can happen if the browser interferes with the auth flow
-  //         ctx.response.status = 500;
-  //         ctx.response.body = 'Failed to get access token! Please try again.';
-  //         return;
-  //       }
-  //       // Redirect to user auth endpoint, to get user's online token
-  //       ctx.response.body = 'found';
-  //       ctx.redirect(`/auth?shop=${shop}&host=${host}`);
-  //     },
-  //   })
-  // );
+// Define the endpoint for the Shopify app installation request
+router.get('/shopify/install', async (ctx) => {
+  // Extract the query parameters from the request
+  const { shop, hmac } = ctx.query;
 
-  // server.use(
-  //   createShopifyAuth({
-  //     accessMode: 'online',
-  //     authPath: '/auth',
-  //     async afterAuth(ctx) {
-  //       const { shop } = ctx.state.shopify;
-  //       const { host } = ctx.query;
-  //       // Check if the app is installed
-  //       // NOTE: You can replace with your own function to check if the shop is installed, or you can just remove it, but this is an extra check that can help prevent auth issues
-  //       if (isShopActive(shop)) {
-  //         // Redirect to app
-  //         ctx.redirect(`/?shop=${shop}&host=${host}`);
-  //       } else {
-  //         // Redirect to installation endpoint to get permanent access token
-  //         ctx.redirect(`/install/auth/?shop=${shop}&host=${host}`);
-  //       }
-  //     },
-  //   })
-  // );
+  // Generate the query string from the parameters
+  const queryStringParams = queryString.stringify({
+    shop,
+    hmac
+  });
+
+  const hmacDigest = crypto
+    .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
+    .update(queryStringParams)
+    .digest('hex');
+
+  // Compare the HMAC in the query string with the calculated HMAC
+  if (hmacDigest !== hmac) {
+    // Return an error if the HMACs do not match
+    ctx.status = 400;
+    ctx.body = 'HMAC validation failed';
+    return;
+  }
+
+  // Store the shop name for use in future requests
+
+// Store the shop name for use in future requests
+ctx.session.shopName = shop;
+
+// Redirect the user to the Shopify OAuth authorization request
+const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${process.env.SHOPIFY_APP_REDIRECT_URL}`;
+ctx.redirect(installUrl);
+});
+
+
+
+
 
   router.get('/api/unregistered', async (ctx) => {
     ctx.body = await unregisteredIdModel.find();
@@ -402,3 +366,126 @@ app.prepare().then(() => {
     console.log(`Ready on http://localhost:${port}`);
   });
 });
+
+
+// router.get('/shopify/auth', async (ctx) => {
+//   // Extract the query parameters from the request
+//   const { shop, hmac, code, state } = ctx.query;
+
+//   // Generate the query string from the parameters
+//   const queryStringParams = queryString.stringify({
+//     shop,
+//     hmac,
+//     code,
+//     state
+//   });
+
+//   const hmacDigest = crypto
+//     .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
+//     .update(queryStringParams)
+//     .digest('hex');
+
+//   // Compare the HMAC in the query string with the calculated HMAC
+//   if (hmacDigest !== hmac) {
+//     // Return an error if the HMACs do not match
+//     ctx.status = 400;
+//     ctx.body = 'HMAC validation failed';
+//     return;
+//   }
+
+//   // Define the endpoint for the Shopify OAuth authorization request
+//   const response = await fetch(`https://${shop}/admin/oauth/access_token`, {
+//     method: 'POST',
+//     headers: {
+//       'Content-Type': 'application/json',
+//     },
+//     body: JSON.stringify({
+//       client_id: process.env.SHOPIFY_API_KEY,
+//       client_secret: process.env.SHOPIFY_API_SECRET,
+//       code,
+//     }),
+//   });
+//   const responseJson = await response.json();
+//   console.log("auth response",  responseJson)
+
+//   // Store the access token and shop name for use in future requests
+//   ctx.session.accessToken = responseJson.access_token;
+//   ctx.session.shopName = shop;
+
+//   // Redirect the user back to the custom app
+//   ctx.redirect('/');
+// });
+
+// // Define the endpoint for the Shopify app installation request
+// router.get('/shopify/install', async (ctx) => {
+//   // Extract the query parameters from the request
+//   const { shop, hmac } = ctx.query;
+
+//   // Generate the query string from the parameters
+//   const queryStringParams = queryString.stringify({
+//     shop,
+//     hmac
+//   });
+
+//   const hmacDigest = crypto
+//     .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
+//     .update(queryStringParams)
+//     .digest('hex');
+
+//   // Compare the HMAC in the query string with the calculated HMAC
+//   if (hmacDigest !== hmac) {
+//     // Return an error if the HMACs do not match
+//     ctx.status = 400;
+//     ctx.body = 'HMAC validation failed';
+//     return;
+//   }
+
+//   // Store the shop name for use in future requests
+
+// // Store the shop name for use in future requests
+// ctx.session.shopName = shop;
+
+// // Redirect the user to the Shopify OAuth authorization request
+// const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${process.env.SHOPIFY_APP_REDIRECT_URL}`;
+// ctx.redirect(installUrl);
+// });
+
+// // server.use(
+// //   createShopifyAuth({
+// //     accessMode: 'offline',
+// //     authPath: '/install/auth',
+// //     async afterAuth(ctx) {
+// //       const { shop, accessToken } = ctx.state.shopify;
+// //       const { host } = ctx.query;
+// //       if (!accessToken) {
+// //         // This can happen if the browser interferes with the auth flow
+// //         ctx.response.status = 500;
+// //         ctx.response.body = 'Failed to get access token! Please try again.';
+// //         return;
+// //       }
+// //       // Redirect to user auth endpoint, to get user's online token
+// //       ctx.response.body = 'found';
+// //       ctx.redirect(`/auth?shop=${shop}&host=${host}`);
+// //     },
+// //   })
+// // );
+
+// // server.use(
+// //   createShopifyAuth({
+// //     accessMode: 'online',
+// //     authPath: '/auth',
+// //     async afterAuth(ctx) {
+// //       const { shop } = ctx.state.shopify;
+// //       const { host } = ctx.query;
+// //       // Check if the app is installed
+// //       // NOTE: You can replace with your own function to check if the shop is installed, or you can just remove it, but this is an extra check that can help prevent auth issues
+// //       if (isShopActive(shop)) {
+// //         // Redirect to app
+// //         ctx.redirect(`/?shop=${shop}&host=${host}`);
+// //       } else {
+// //         // Redirect to installation endpoint to get permanent access token
+// //         ctx.redirect(`/install/auth/?shop=${shop}&host=${host}`);
+// //       }
+// //     },
+// //   })
+// // );
