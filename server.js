@@ -12,6 +12,7 @@ const bodyParser = require('koa-body');
 const cors = require('@koa/cors');
 const google_cal = require('./google_calendar');
 const shopifyApiCalls = require('./shopifyApiCalls');
+const { HmacSHA256 } = require("crypto-js");
 const {createShopifyAuth, verifyRequest } = require('simple-koa-shopify-auth')
 
 dotenv.config();
@@ -59,37 +60,26 @@ app.prepare().then(() => {
   router.get('/_next/webpack-hmr', handleRequest);
 
 
-
-  router.get('/shopify/auth', async (ctx) => {
+  router.get("/shopify/auth", async (ctx) => {
     // Extract the query parameters from the request
     const { shop, hmac, code, state } = ctx.query;
-
-    // Generate the query string from the parameters
-    const queryStringParams = queryString.stringify({
-      shop,
-      hmac,
-      code,
-      state
-    });
-
-    const hmacDigest = crypto
-      .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
-      .update(queryStringParams)
-      .digest('hex');
-
+  
+    const queryString = `code=${code}&shop=${shop}&state=${state}`;
+    const hmacDigest = HmacSHA256(queryString, process.env.SHOPIFY_API_SECRET).toString();
+  
     // Compare the HMAC in the query string with the calculated HMAC
     if (hmacDigest !== hmac) {
       // Return an error if the HMACs do not match
       ctx.status = 400;
-      ctx.body = 'HMAC validation failed';
+      ctx.body = "HMAC validation failed";
       return;
     }
-
+  
     // Define the endpoint for the Shopify OAuth authorization request
     const response = await fetch(`https://${shop}/admin/oauth/access_token`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json',
+        "Content-Type": "application/json",
       },
       body: JSON.stringify({
         client_id: process.env.SHOPIFY_API_KEY,
@@ -98,48 +88,38 @@ app.prepare().then(() => {
       }),
     });
     const responseJson = await response.json();
-    console.log("auth response",  responseJson)
-
+    console.log("auth response", responseJson);
+  
     // Store the access token and shop name for use in future requests
     ctx.session.accessToken = responseJson.access_token;
     ctx.session.shopName = shop;
-
+  
     // Redirect the user back to the custom app
-    ctx.redirect('/');
+    ctx.redirect("/");
   });
-
+  
   // Define the endpoint for the Shopify app installation request
-  router.get('/shopify/install', async (ctx) => {
-    // Extract the query parameters from the request
-    const { shop, hmac } = ctx.query;
-
-    // Generate the query string from the parameters
-    const queryStringParams = queryString.stringify({
-      shop,
-      hmac
-    });
-
-    const hmacDigest = crypto
-      .createHmac('sha256', process.env.SHOPIFY_API_SECRET)
-      .update(queryStringParams)
-      .digest('hex');
-
+  router.get("/shopify/install", async (ctx) => {
+    // Extract the shop name from the request body
+    const { shop, hmac } = ctx.request.body;
+  
+    const queryString = `shop=${shop}`;
+    const hmacDigest = HmacSHA256(queryString, process.env.SHOPIFY_API_SECRET).toString();
+  
     // Compare the HMAC in the query string with the calculated HMAC
     if (hmacDigest !== hmac) {
       // Return an error if the HMACs do not match
       ctx.status = 400;
-      ctx.body = 'HMAC validation failed';
+      ctx.body = "HMAC validation failed";
       return;
     }
-
-    // Store the shop name for use in future requests
-
+  
     // Store the shop name for use in future requests
     ctx.session.shopName = shop;
-
-  // Redirect the user to the Shopify OAuth authorization request
-  const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${process.env.SHOPIFY_APP_REDIRECT_URL}`;
-  ctx.redirect(installUrl);
+  
+    // Redirect the user to the Shopify OAuth authorization request
+    const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${process.env.SHOPIFY_API_KEY}&scope=${process.env.SHOPIFY_API_SCOPES}&redirect_uri=${process.env.SHOPIFY_APP_REDIRECT_URL}`;
+    ctx.redirect(installUrl);
   });
 
 
