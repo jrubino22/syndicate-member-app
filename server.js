@@ -65,7 +65,7 @@ app.prepare().then(() => {
   
   router.get('/install', async ctx => {
     const shop = ctx.query.shop;
-    const redirectUri = 'http://localhost:3000/auth/callback';
+    const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
     const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_products&redirect_uri=${redirectUri}`;
     ctx.redirect(installUrl);
   });
