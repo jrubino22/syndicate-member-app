@@ -54,7 +54,7 @@ app.prepare().then(() => {
     ctx.res.statusCode = 200;
   };
 
-  app.use(cors());
+  server.use(cors());
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);
 
