@@ -31,20 +31,13 @@ Shopify.Context.initialize({
   SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
 });
 
-const handleRequest = async (ctx) => {
-  // verifyRequest();
-  await handle(ctx.req, ctx.res);
-  ctx.respond = true;
-  ctx.res.statusCode = 200;
-};
-
-// const verifyApiRequest = verifyRequest({ returnHeader: true });
-
 const port = process.env.PORT || 5000;
 const dev = process.env.NODE_ENV !== 'production';
 const prod = process.env.NODE_ENV === 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
+
+
 
 
 const ACTIVE_SHOPIFY_SHOPS = {};
@@ -54,6 +47,12 @@ app.prepare().then(() => {
 
   const router = new Router();
   server.keys = [Shopify.Context.API_SECRET_KEY];
+
+  const handleRequest = async (ctx) => {
+    await handle(ctx.req, ctx.res);
+    ctx.respond = true;
+    ctx.res.statusCode = 200;
+  };
 
   app.use(cors());
   router.get('(/_next/static/.*)', handleRequest);
@@ -85,7 +84,7 @@ app.prepare().then(() => {
     const accessToken = accessTokenData.access_token;
     // Use the access token to make API calls
     // ...
-    ctx.redirect('https://syndicate-member.herokuapp.com');
+    // ctx.redirect('https://syndicate-member.herokuapp.com');
   });
 
 
