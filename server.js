@@ -12,8 +12,9 @@ const bodyParser = require('koa-body');
 const cors = require('@koa/cors');
 const google_cal = require('./google_calendar');
 const shopifyApiCalls = require('./shopifyApiCalls');
-const { HmacSHA256 } = require("crypto-js");
+const CyptoJs = require("crypto-js");
 const shopifyAuth = require('simple-koa-shopify-auth')
+const session = require('koa-session')
 
 dotenv.config();
 
@@ -55,6 +56,12 @@ app.prepare().then(() => {
   server.keys = [Shopify.Context.API_SECRET_KEY];
 
   const handleRequest = async (ctx) => {
+    if (!ctx.session.accessToken) {
+      ctx.status = 401;
+      ctx.body = { error: "Shopify access token is required" };
+      return;
+    }
+  
     await handle(ctx.req, ctx.res);
     ctx.respond = true;
     ctx.res.statusCode = 200;
@@ -82,14 +89,24 @@ app.prepare().then(() => {
   
   router.get('/install', async ctx => {
     const shop = ctx.query.shop;
+    const state = CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
+
+    ctx.session.state = state
 
     const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
-    const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}`;
+    const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}&state=${state}`;
     ctx.redirect(installUrl);
   });
   
   router.get('/auth/callback', async ctx => {
-    const { code, shop } = ctx.query;
+    const { code, shop, state } = ctx.query;
+
+    if (state !== ctx.session.state) {
+      ctx.status = 400;
+      ctx.body = { error: "Not Authorized"}
+      return;
+    }
+
     const accessTokenResponse = await fetch(`https://${shop}/admin/oauth/access_token`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -107,7 +124,7 @@ app.prepare().then(() => {
     const accessTokenData = await accessTokenResponse.json();
     const accessToken = accessTokenData.access_token;
     // Use the access token to make API calls
-
+      ctx.session.accessToken = accessToken
     // Redirect the user to the appropriate page
     ctx.redirect('https://syndicate-member.herokuapp.com');
   });
