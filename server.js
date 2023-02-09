@@ -66,7 +66,7 @@ app.prepare().then(() => {
     const shop = ctx.query.shop;
 
     const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
-    const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_products&redirect_uri=${redirectUri}`;
+    const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}`;
     ctx.body = `<meta http-equiv="refresh" content="0; URL='${installUrl}'"/>`
     // ctx.redirect(installUrl);
   });
