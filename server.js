@@ -67,7 +67,7 @@ app.prepare().then(() => {
 
     const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
     const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_products&redirect_uri=${redirectUri}`;
-    ctx.body = `<script>window.location.href = "${installUrl}";</script>`;
+    ctx.body = `<meta http-equiv="refresh" content="0; URL='${installUrl}'"/>`
     // ctx.redirect(installUrl);
   });
   
@@ -92,7 +92,7 @@ app.prepare().then(() => {
     // Use the access token to make API calls
     // ...
     // Redirect the user to the appropriate page
-    ctx.body = `<script>window.location.href = "https://syndicate-member.herokuapp.com";</script>`;
+    ctx.body = `<meta http-equiv="refresh" content="0; URL='https://syndicate-member.herokuapp.com'"/>`;
     // ctx.redirect('https://syndicate-member.herokuapp.com');
   });
 
