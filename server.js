@@ -64,9 +64,21 @@ app.prepare().then(() => {
   
   router.get('/install', async ctx => {
     const shop = ctx.query.shop;
-    const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
-    const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_products&redirect_uri=${redirectUri}`;
-    ctx.redirect(installUrl);
+    try {
+      const apps = await Shopify.App.list({}, shop, ctx.query.access_token);
+      const installedApps = apps.map(app => app.api_key);
+      if (installedApps.includes(process.env.SHOPIFY_API_KEY)) {
+        ctx.redirect(`https://syndicate-member.herokuapp.com/auth/callback?shop=${shop}`);
+      } else {
+        const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
+        const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_products&redirect_uri=${redirectUri}`;
+        ctx.redirect(installUrl);
+      }
+    } catch (error) {
+      console.error(error);
+      ctx.status = 500;
+      ctx.body = { error: 'Failed to retrieve installed apps' };
+    }
   });
   
   router.get('/auth/callback', async ctx => {
