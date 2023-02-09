@@ -1,6 +1,19 @@
 import Link from 'next/link';
+import { useState } from 'react';
 
 const Index = ({ member }) => {
+
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+    const filteredCards = card.filter(function ({ customerEmail }) {
+      return customerEmail.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+    setSearchResults(filteredCards);
+  };
+
   return (
     <div className="flex-container">
       <div className="menu-container">
@@ -19,22 +32,48 @@ const Index = ({ member }) => {
         </ul>
       </div>
       <div className="content-container">
-        {member.map(({ _Id, customerEmail, cardTier, accountNumber }) => (
-          <div key={_Id} className="border">
-            <p>
-              <span> Customer Email: {customerEmail} </span>|
-              <span> Membership Tier: {cardTier} </span>|
-              <span> Account Number: {accountNumber} </span>
-              <Link
-                key={_Id}
-                href={`/view-member/${accountNumber}`}
-                className="editButton"
-              >
-                <button className="editButton">View Member</button>
-              </Link>
-            </p>
-          </div>
-        ))}
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder="Search by email"
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+        </div>  
+          {searchResults.length > 0
+            ? searchResults.map(({  _Id, customerEmail, cardTier, accountNumber  }) => (
+              <div key={_Id} className="border">
+              <p>
+                <span> Customer Email: {customerEmail} </span>|
+                <span> Membership Tier: {cardTier} </span>|
+                <span> Account Number: {accountNumber} </span>
+                <Link
+                  key={_Id}
+                  href={`/view-member/${accountNumber}`}
+                  className="editButton"
+                >
+                  <button className="editButton">View Member</button>
+                </Link>
+              </p>
+            </div>
+              ))
+            : 
+          member.map(({ _Id, customerEmail, cardTier, accountNumber }) => (
+            <div key={_Id} className="border">
+              <p>
+                <span> Customer Email: {customerEmail} </span>|
+                <span> Membership Tier: {cardTier} </span>|
+                <span> Account Number: {accountNumber} </span>
+                <Link
+                  key={_Id}
+                  href={`/view-member/${accountNumber}`}
+                  className="editButton"
+                >
+                  <button className="editButton">View Member</button>
+                </Link>
+              </p>
+            </div>
+          ))}
       </div>
     </div>
   );

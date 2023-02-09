@@ -38,7 +38,7 @@ const UnregisteredCards = ({ card }) => {
         <div className="search-container">
           <input
             type="text"
-            placeholder="Search by Member ID"
+            placeholder="Search by ID"
             value={searchTerm}
             onChange={handleSearch}
           />
