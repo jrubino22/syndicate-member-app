@@ -72,8 +72,20 @@ app.prepare().then(() => {
     }
   }));
 
-  // router.get('(/_next/static/.*)', handleRequest);
-  // router.get('/_next/webpack-hmr', handleRequest);
+  server.use(async (ctx, next) => {
+    if (!ctx.header.referer || ctx.header.referer.indexOf('https://admin.shopify.com/') !== 0 
+        || ctx.header.referer.indexOf('https://wholesale-vsyndicate.myshopify.com/') !== 0 
+        || ctx.header.referer.indexOf('https://wholesale.vsyndicate.com/') !== 0) {
+      ctx.status = 401;
+      ctx.body = 'Unauthorized';
+      return;
+    }
+  
+    await next();
+  });
+
+  router.get('(/_next/static/.*)', handleRequest);
+  router.get('/_next/webpack-hmr', handleRequest);
 
 
   const clientId = process.env.SHOPIFY_API_KEY;
@@ -103,8 +115,6 @@ app.prepare().then(() => {
       ctx.body = { error: "Failed to obtain access token." };
       return;
     }
-    router.get('(/_next/static/.*)', handleRequest);
-    router.get('/_next/webpack-hmr', handleRequest);
     const accessTokenData = await accessTokenResponse.json();
     const accessToken = accessTokenData.access_token;
     // Use the access token to make API calls
