@@ -1,5 +1,5 @@
 import Link from 'next/link';
-
+import { useState } from 'react';
 
 const SentCards = ({ card }) => {
   const [searchTerm, setSearchTerm] = useState('');
