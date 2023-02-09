@@ -27,7 +27,7 @@ Shopify.Context.initialize({
   SCOPES: ['write_customers','read_customers'],
   HOST_NAME: process.env.SHOPIFY_APP_URL.replace(/https:\/\//, ''),
   API_VERSION: ApiVersion.June16,
-  IS_EMBEDDED_APP: false,
+  IS_EMBEDDED_APP: true,
   SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
 });
 
@@ -80,11 +80,17 @@ app.prepare().then(() => {
         code
       })
     });
+    if (accessTokenResponse.status !== 200) {
+      ctx.status = accessTokenResponse.status;
+      ctx.body = { error: "Failed to obtain access token." };
+      return;
+    }
     const accessTokenData = await accessTokenResponse.json();
     const accessToken = accessTokenData.access_token;
     // Use the access token to make API calls
     // ...
-    // ctx.redirect('https://syndicate-member.herokuapp.com');
+    // Redirect the user to the appropriate page
+    ctx.redirect('https://syndicate-member.herokuapp.com');
   });
 
 
