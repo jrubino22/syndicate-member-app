@@ -72,18 +72,6 @@ app.prepare().then(() => {
     }
   }));
 
-  server.use(async (ctx, next) => {
-    console.log("referer", ctx.header.referer)
-    if (!ctx.header.referer || ctx.header.referer.indexOf('https://admin.shopify.com/') !== 0 
-        || ctx.header.referer.indexOf('https://wholesale-vsyndicate.myshopify.com/') !== 0 
-        || ctx.header.referer.indexOf('https://wholesale.vsyndicate.com/') !== 0) {
-      ctx.status = 401;
-      ctx.body = 'Unauthorized';
-      return;
-    }
-  
-    await next();
-  });
 
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);
