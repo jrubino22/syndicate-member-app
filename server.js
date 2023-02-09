@@ -71,9 +71,9 @@ app.prepare().then(() => {
       return callback(null, true);
     }
   }));
-  
-  router.get('(/_next/static/.*)', handleRequest);
-  router.get('/_next/webpack-hmr', handleRequest);
+
+  // router.get('(/_next/static/.*)', handleRequest);
+  // router.get('/_next/webpack-hmr', handleRequest);
 
 
   const clientId = process.env.SHOPIFY_API_KEY;
@@ -103,10 +103,12 @@ app.prepare().then(() => {
       ctx.body = { error: "Failed to obtain access token." };
       return;
     }
+    router.get('(/_next/static/.*)', handleRequest);
+    router.get('/_next/webpack-hmr', handleRequest);
     const accessTokenData = await accessTokenResponse.json();
     const accessToken = accessTokenData.access_token;
     // Use the access token to make API calls
-    // ...
+
     // Redirect the user to the appropriate page
     ctx.redirect('https://syndicate-member.herokuapp.com');
   });
