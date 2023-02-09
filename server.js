@@ -56,11 +56,6 @@ app.prepare().then(() => {
   server.keys = [Shopify.Context.API_SECRET_KEY];
 
   const handleRequest = async (ctx) => {
-    if (!ctx.session.accessToken) {
-      ctx.status = 401;
-      ctx.body = { error: "Shopify access token is required" };
-      return;
-    }
   
     await handle(ctx.req, ctx.res);
     ctx.respond = true;
@@ -171,6 +166,11 @@ app.prepare().then(() => {
 
   // get all members
   router.get('/api/members', cors(), async (ctx) => {
+    if (!ctx.session.accessToken) {
+      ctx.status = 401;
+      ctx.body = { error: "Shopify access token is required" };
+      return;
+    }
     ctx.body = await registeredIdModel.find();
   });
 
