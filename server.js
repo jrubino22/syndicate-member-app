@@ -62,7 +62,7 @@ app.prepare().then(() => {
 
   server.use(cors({
     origin: function (origin, callback) {
-      if (!origin) return callback(null, true);
+      // if (!origin) return callback(null, true);
       if (allowedOrigins.indexOf(origin) === -1) {
         var msg = 'The CORS policy for this site does not ' +
                   'allow access from the specified Origin.';
@@ -153,7 +153,7 @@ app.prepare().then(() => {
   });
 
   // get all members
-  router.get('/api/members', async (ctx) => {
+  router.get('/api/members', cors(), async (ctx) => {
     ctx.body = await registeredIdModel.find();
   });
 
