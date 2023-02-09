@@ -1,6 +1,18 @@
 import Link from 'next/link';
 
+
 const SentCards = ({ card }) => {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState([]);
+
+  const handleSearch = (event) => {
+    setSearchTerm(event.target.value);
+    const filteredCards = card.filter(function ({ memberId }) {
+      return memberId.toLowerCase().includes(searchTerm.toLowerCase());
+    });
+    setSearchResults(filteredCards);
+  };
+
   return (
     <div>
       <div className="menu-container">
@@ -23,7 +35,29 @@ const SentCards = ({ card }) => {
         </ul>
       </div>
       <div className="content-container">
-        {card
+      <div className="search-container">
+          <input
+            type="text"
+            placeholder="Search by ID"
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+        </div>  
+        {searchResults.length > 0
+          ? searchResults.map(({ _Id, memberId }) => (
+              <div key={_Id} className="unsent-card-container">
+                <p>
+                  <span> ID Number: {memberId} </span>
+                  <Link
+                    href={`/unregistered-cards/${memberId}`}
+                    className="editButton"
+                  >
+                    <button className="editButton">Edit</button>
+                  </Link>
+                </p>
+              </div>
+            ))
+          :card
           .filter(function ({ sent }) {
             if (sent === false) {
               return false;

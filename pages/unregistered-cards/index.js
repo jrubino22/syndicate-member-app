@@ -34,15 +34,15 @@ const UnregisteredCards = ({ card }) => {
           </li>
         </ul>
       </div>
-      <div className="search-container">
-        <input
-          type="text"
-          placeholder="Search by Member ID"
-          value={searchTerm}
-          onChange={handleSearch}
-        />
-      </div>
       <div className="content-container">
+        <div className="search-container">
+          <input
+            type="text"
+            placeholder="Search by Member ID"
+            value={searchTerm}
+            onChange={handleSearch}
+          />
+        </div>      
         {searchResults.length > 0
           ? searchResults.map(({ _Id, memberId }) => (
               <div key={_Id} className="unsent-card-container">
