@@ -17,6 +17,12 @@ const shopifyAuth = require('simple-koa-shopify-auth')
 
 dotenv.config();
 
+const allowedOrigins = [
+  'https://wholesale.vsyndicate.com/',
+  'https://admin.shopify.com/store/wholesale-vsyndicate/',
+  'https://wholesale-vsyndicate.myshopify.com/'
+];
+
 mongoose.connect(process.env.MONGO_URL, () => {
   console.log('Connected to Mongo DB');
 });
@@ -54,7 +60,18 @@ app.prepare().then(() => {
     ctx.res.statusCode = 200;
   };
 
-  server.use(cors());
+  server.use(cors({
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+      if (allowedOrigins.indexOf(origin) === -1) {
+        var msg = 'The CORS policy for this site does not ' +
+                  'allow access from the specified Origin.';
+        return callback(new Error(msg), false);
+      }
+      return callback(null, true);
+    }
+  }));
+  
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);
 
@@ -67,8 +84,7 @@ app.prepare().then(() => {
 
     const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
     const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}`;
-    ctx.body = `<meta http-equiv="refresh" content="0; URL='${installUrl}'"/>`
-    // ctx.redirect(installUrl);
+    ctx.redirect(installUrl);
   });
   
   router.get('/auth/callback', async ctx => {
@@ -92,8 +108,7 @@ app.prepare().then(() => {
     // Use the access token to make API calls
     // ...
     // Redirect the user to the appropriate page
-    ctx.body = `<meta http-equiv="refresh" content="0; URL='https://syndicate-member.herokuapp.com'"/>`;
-    // ctx.redirect('https://syndicate-member.herokuapp.com');
+    ctx.redirect('https://syndicate-member.herokuapp.com');
   });
 
 
@@ -319,46 +334,3 @@ app.prepare().then(() => {
     console.log(`Ready on http://localhost:${port}`);
   });
 });
-
-
-
-
-// // server.use(
-// //   createShopifyAuth({
-// //     accessMode: 'offline',
-// //     authPath: '/install/auth',
-// //     async afterAuth(ctx) {
-// //       const { shop, accessToken } = ctx.state.shopify;
-// //       const { host } = ctx.query;
-// //       if (!accessToken) {
-// //         // This can happen if the browser interferes with the auth flow
-// //         ctx.response.status = 500;
-// //         ctx.response.body = 'Failed to get access token! Please try again.';
-// //         return;
-// //       }
-// //       // Redirect to user auth endpoint, to get user's online token
-// //       ctx.response.body = 'found';
-// //       ctx.redirect(`/auth?shop=${shop}&host=${host}`);
-// //     },
-// //   })
-// // );
-
-// // server.use(
-// //   createShopifyAuth({
-// //     accessMode: 'online',
-// //     authPath: '/auth',
-// //     async afterAuth(ctx) {
-// //       const { shop } = ctx.state.shopify;
-// //       const { host } = ctx.query;
-// //       // Check if the app is installed
-// //       // NOTE: You can replace with your own function to check if the shop is installed, or you can just remove it, but this is an extra check that can help prevent auth issues
-// //       if (isShopActive(shop)) {
-// //         // Redirect to app
-// //         ctx.redirect(`/?shop=${shop}&host=${host}`);
-// //       } else {
-// //         // Redirect to installation endpoint to get permanent access token
-// //         ctx.redirect(`/install/auth/?shop=${shop}&host=${host}`);
-// //       }
-// //     },
-// //   })
-// // );
