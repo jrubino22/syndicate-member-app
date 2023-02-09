@@ -73,6 +73,7 @@ app.prepare().then(() => {
   }));
 
   server.use(async (ctx, next) => {
+    console.log("referer", ctx.header.referer)
     if (!ctx.header.referer || ctx.header.referer.indexOf('https://admin.shopify.com/') !== 0 
         || ctx.header.referer.indexOf('https://wholesale-vsyndicate.myshopify.com/') !== 0 
         || ctx.header.referer.indexOf('https://wholesale.vsyndicate.com/') !== 0) {
