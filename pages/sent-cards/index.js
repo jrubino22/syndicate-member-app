@@ -44,7 +44,12 @@ const SentCards = ({ card }) => {
           />
         </div>  
         {searchResults.length > 0
-          ? searchResults.map(({ _Id, memberId }) => (
+          ? searchResults.filter(function({sent}){
+            if (sent === false) {
+              return false
+            }
+            return true;
+          }).map(({ _Id, memberId }) => (
               <div key={_Id} className="unsent-card-container">
                 <p>
                   <span> ID Number: {memberId} </span>

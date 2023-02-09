@@ -8,8 +8,8 @@ const Index = ({ member }) => {
 
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
-    const filteredCards = card.filter(function ({ customerEmail }) {
-      return customerEmail.toLowerCase().includes(searchTerm.toLowerCase());
+    const filteredCards = card.filter(function ({ member.customerEmail }) {
+      return member.customerEmail.toLowerCase().includes(searchTerm.toLowerCase());
     });
     setSearchResults(filteredCards);
   };
