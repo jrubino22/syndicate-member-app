@@ -13,8 +13,8 @@ const cors = require('@koa/cors');
 const google_cal = require('./google_calendar');
 const shopifyApiCalls = require('./shopifyApiCalls');
 const CryptoJS = require("crypto-js");
-const shopifyAuth = require('simple-koa-shopify-auth')
-const session = require('koa-session')
+const shopifyAuth = require('simple-koa-shopify-auth');
+const session = require('koa-session');
 
 dotenv.config();
 
@@ -51,9 +51,12 @@ const ACTIVE_SHOPIFY_SHOPS = {};
 
 app.prepare().then(() => {
   const server = new Koa();
+
+  server.keys = ['dsfdaasgadfa'];
   server.use(session(server));
+
   const router = new Router();
-  // server.keys = ['dsfdaasgadfa'];
+  // 
   
   // server.keys = [Shopify.Context.API_SECRET_KEY];
 
