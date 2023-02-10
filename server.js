@@ -91,9 +91,12 @@ app.prepare().then(() => {
   
   //installation path
   router.get('/install', async ctx => {
+    ctx.session = {}
     const shop = ctx.query.shop;
     const state = CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
+    console.log("before", ctx.session)
     ctx.session.state = state
+    console.log("after", ctx.session)
     const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
     const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}&state=${state}`;
     ctx.redirect(installUrl);
@@ -102,7 +105,7 @@ app.prepare().then(() => {
   //auth path
   router.get('/auth/callback', async ctx => {
     const { code, shop, state } = ctx.query;
-
+    console.log("auth", ctx.session)
     if (await state !== ctx.session.state) {
       ctx.status = 400;
       ctx.body = { error: `${state  }   ${  ctx.session.state}`}
