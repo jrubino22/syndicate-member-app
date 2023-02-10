@@ -146,7 +146,7 @@ app.prepare().then(() => {
       console.log("auth, ctx.session")
       if (await state !== ctx.session.state) {
         ctx.status = 400;
-        ctx.body = { error: `${state  }   ${  ctx.session.state}`}
+        ctx.body = { error: `${state  } already  ${  ctx.session.state}`}
         return;
       }
       const accessToken = process.env.ACCESS_TOKEN 
