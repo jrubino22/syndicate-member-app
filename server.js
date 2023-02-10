@@ -53,7 +53,9 @@ app.prepare().then(() => {
   const server = new Koa();
 
   const router = new Router();
-  server.keys = [Shopify.Context.API_SECRET_KEY];
+  server.keys = ['dsfdaasgadfa'];
+  server.use(session(server));
+  // server.keys = [Shopify.Context.API_SECRET_KEY];
 
   const handleRequest = async (ctx) => {
   
@@ -74,12 +76,7 @@ app.prepare().then(() => {
     }
   }));
 
-  server.keys = ['dsfdaasgadfa'];
-  server.use(session({
-    key: 'session-id',
-    maxAge: 86400000,
-    secret: server.keys[0]
-  }, server));
+
 
 
   router.get('(/_next/static/.*)', handleRequest);
