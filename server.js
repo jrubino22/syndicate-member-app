@@ -82,17 +82,19 @@ app.prepare().then(() => {
   const clientId = process.env.SHOPIFY_API_KEY;
   const clientSecret = process.env.SHOPIFY_API_SECRET;
   
+  //installation path
   router.get('/install', async ctx => {
     const shop = ctx.query.shop;
-    // const state = CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
+    const state = CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
 
     ctx.session.state = state
-
+    console.log("crypto", ctx.session.state)
     const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
     const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}&state=${state}`;
     ctx.redirect(installUrl);
   });
-  
+
+  //auth path
   router.get('/auth/callback', async ctx => {
     const { code, shop, state } = ctx.query;
 
