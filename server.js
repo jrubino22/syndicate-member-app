@@ -86,6 +86,7 @@ app.prepare().then(() => {
   router.get('/install', async ctx => {
     const shop = ctx.query.shop;
     const state = CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
+    console.log("state", state)
 
     ctx.session.state = state
     console.log("crypto", ctx.session.state)
@@ -120,7 +121,7 @@ app.prepare().then(() => {
     }
     const accessTokenData = await accessTokenResponse.json();
     const accessToken = accessTokenData.access_token;
-    console.log(accessToken)
+    console.log("token", accessToken)
     // Use the access token to make API calls
       // ctx.session.accessToken = accessToken
     // Redirect the user to the appropriate page
