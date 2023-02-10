@@ -28,15 +28,15 @@ mongoose.connect(process.env.MONGO_URL, () => {
   console.log('Connected to Mongo DB');
 });
 
-Shopify.Context.initialize({
-  API_KEY: process.env.SHOPIFY_API_KEY,
-  API_SECRET_KEY: process.env.SHOPIFY_API_SECRET,
-  SCOPES: ['write_customers','read_customers'],
-  HOST_NAME: process.env.SHOPIFY_APP_URL.replace(/https:\/\//, ''),
-  API_VERSION: ApiVersion.June16,
-  IS_EMBEDDED_APP: true,
-  SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
-});
+// Shopify.Context.initialize({
+//   API_KEY: process.env.SHOPIFY_API_KEY,
+//   API_SECRET_KEY: process.env.SHOPIFY_API_SECRET,
+//   SCOPES: ['write_customers','read_customers'],
+//   HOST_NAME: process.env.SHOPIFY_APP_URL.replace(/https:\/\//, ''),
+//   API_VERSION: ApiVersion.June16,
+//   IS_EMBEDDED_APP: true,
+//   SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
+// });
 
 const port = process.env.PORT || 5000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -94,7 +94,7 @@ app.prepare().then(() => {
     const shop = ctx.query.shop;
     const state = CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
     const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
-    const installUrl = `https://${shop}.com/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}&state=${state}`;
+    const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}&state=${state}`;
     console.log("before", ctx.session)
     ctx.session.state = state
     console.log("after", ctx.session)
