@@ -74,6 +74,9 @@ app.prepare().then(() => {
     }
   }));
 
+  server.keys = ['dsfdaasgadfa'];
+  server.use(session({}, server));
+
 
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);
@@ -87,7 +90,6 @@ app.prepare().then(() => {
     const shop = ctx.query.shop;
     const state = await CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
     ctx.session.state = state
-    console.log("crypto", ctx.session.state)
     const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
     const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}&state=${state}`;
     ctx.redirect(installUrl);
