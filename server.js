@@ -85,7 +85,7 @@ app.prepare().then(() => {
   //installation path
   router.get('/install', async ctx => {
     const shop = ctx.query.shop;
-    const state = CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
+    const state = await CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
     console.log("state", state)
 
     ctx.session.state = state
