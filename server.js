@@ -98,6 +98,7 @@ app.prepare().then(() => {
     console.log("after", ctx.session)
     const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
     if(shop === 'wholesale-vsyndicate.myshopify.com'){
+      console.log("wsdfasfd")
       return ctx.redirect(`https://syndicate-member.herokuapp.com/auth?shop=${shop}&state=${state}`)
     }
     
