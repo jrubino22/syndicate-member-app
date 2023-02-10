@@ -51,10 +51,10 @@ const ACTIVE_SHOPIFY_SHOPS = {};
 
 app.prepare().then(() => {
   const server = new Koa();
-
-  const router = new Router();
-  server.keys = ['dsfdaasgadfa'];
   server.use(session(server));
+  const router = new Router();
+  // server.keys = ['dsfdaasgadfa'];
+  
   // server.keys = [Shopify.Context.API_SECRET_KEY];
 
   const handleRequest = async (ctx) => {
