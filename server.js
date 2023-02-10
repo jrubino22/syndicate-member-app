@@ -86,8 +86,6 @@ app.prepare().then(() => {
   router.get('/install', async ctx => {
     const shop = ctx.query.shop;
     const state = await CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
-    console.log("state", state)
-
     ctx.session.state = state
     console.log("crypto", ctx.session.state)
     const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
@@ -99,7 +97,7 @@ app.prepare().then(() => {
   router.get('/auth/callback', async ctx => {
     const { code, shop, state } = ctx.query;
 
-    if (state !== ctx.session.state) {
+    if (await state !== ctx.session.state) {
       ctx.status = 400;
       ctx.body = { error: "Not Authorized"}
       return;
