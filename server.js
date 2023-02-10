@@ -84,7 +84,7 @@ app.prepare().then(() => {
   
   router.get('/install', async ctx => {
     const shop = ctx.query.shop;
-    const state = CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
+    // const state = CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
 
     ctx.session.state = state
 
@@ -119,7 +119,7 @@ app.prepare().then(() => {
     const accessTokenData = await accessTokenResponse.json();
     const accessToken = accessTokenData.access_token;
     // Use the access token to make API calls
-      ctx.session.accessToken = accessToken
+      // ctx.session.accessToken = accessToken
     // Redirect the user to the appropriate page
     ctx.redirect('https://syndicate-member.herokuapp.com');
   });
@@ -165,12 +165,12 @@ app.prepare().then(() => {
   });
 
   // get all members
-  router.get('/api/members', cors(), async (ctx) => {
-    if (!ctx.session.accessToken) {
-      ctx.status = 401;
-      ctx.body = { error: "Shopify access token is required" };
-      return;
-    }
+  router.get('/api/members', cors(options), async (ctx) => {
+    // if (!ctx.session.accessToken) {
+    //   ctx.status = 401;
+    //   ctx.body = { error: "Shopify access token is required" };
+    //   return;
+    // }
     ctx.body = await registeredIdModel.find();
   });
 
