@@ -118,6 +118,7 @@ app.prepare().then(() => {
     }
     const accessTokenData = await accessTokenResponse.json();
     const accessToken = accessTokenData.access_token;
+    console.log(accessToken)
     // Use the access token to make API calls
       // ctx.session.accessToken = accessToken
     // Redirect the user to the appropriate page
@@ -165,7 +166,7 @@ app.prepare().then(() => {
   });
 
   // get all members
-  router.get('/api/members', cors(options), async (ctx) => {
+  router.get('/api/members', async (ctx) => {
     // if (!ctx.session.accessToken) {
     //   ctx.status = 401;
     //   ctx.body = { error: "Shopify access token is required" };
