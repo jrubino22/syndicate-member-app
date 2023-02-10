@@ -101,7 +101,7 @@ app.prepare().then(() => {
 
     if (await state !== ctx.session.state) {
       ctx.status = 400;
-      ctx.body = { error: state ctx.session.state}
+      ctx.body = { error: `${state  }   ${  ctx.session.state}`}
       return;
     }
 
