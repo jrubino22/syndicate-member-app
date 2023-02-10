@@ -79,14 +79,6 @@ app.prepare().then(() => {
     }
   }));
   
-  router.use(async (ctx, next) => {
-    const expectedHost = 'https://admin.shopify.com'
-    const host = ctx.request.headers.host;
-
-    if (host !== expectedHost) {
-      return;
-    }
-  });
 
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);
