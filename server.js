@@ -12,7 +12,7 @@ const bodyParser = require('koa-body');
 const cors = require('@koa/cors');
 const google_cal = require('./google_calendar');
 const shopifyApiCalls = require('./shopifyApiCalls');
-const CyptoJs = require("crypto-js");
+const CryptoJs = require("crypto-js");
 const shopifyAuth = require('simple-koa-shopify-auth')
 const session = require('koa-session')
 
@@ -127,7 +127,7 @@ app.prepare().then(() => {
     ctx.redirect('https://syndicate-member.herokuapp.com');
   });
 
-
+  //get all unregistered cards
   router.get('/api/unregistered', async (ctx) => {
     ctx.body = await unregisteredIdModel.find();
   });
