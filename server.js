@@ -75,7 +75,10 @@ app.prepare().then(() => {
   }));
 
   server.keys = ['dsfdaasgadfa'];
-  server.use(session({}, server));
+  server.use(session({
+    key: 'session-id',
+    maxAge: 86400000
+  }, server));
 
 
   router.get('(/_next/static/.*)', handleRequest);
