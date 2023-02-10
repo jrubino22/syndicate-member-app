@@ -34,7 +34,7 @@ Shopify.Context.initialize({
   SCOPES: ['write_customers','read_customers'],
   HOST_NAME: process.env.SHOPIFY_APP_URL.replace(/https:\/\//, ''),
   API_VERSION: ApiVersion.June16,
-  IS_EMBEDDED_APP: true,
+  IS_EMBEDDED_APP: false,
   SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
 });
 
@@ -91,14 +91,13 @@ app.prepare().then(() => {
   
   //installation path
   router.get('/install', async ctx => {
-    ctx.session = {}
     const shop = ctx.query.shop;
+    const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
+    const installUrl = `https://${shop}.com/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}&state=${state}`;
     const state = CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
     console.log("before", ctx.session)
     ctx.session.state = state
     console.log("after", ctx.session)
-    const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
-    const installUrl = `https://${shop}.myshopify.com/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}&state=${state}`;
     ctx.redirect(installUrl);
   });
 
