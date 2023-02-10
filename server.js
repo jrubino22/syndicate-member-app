@@ -95,10 +95,10 @@ app.prepare().then(() => {
     ctx.session.state = state
     console.log("after", ctx.session)
     const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
-    if(shop === 'wholesale-vsyndicate.myshopify.com'){
-      console.log("wsdfasfd")
-      return ctx.redirect(`https://syndicate-member.herokuapp.com/auth?shop=${shop}&state=${state}`)
-    }
+    // if(shop === 'wholesale-vsyndicate.myshopify.com'){
+    //   console.log("wsdfasfd")
+    //   return ctx.redirect(`https://syndicate-member.herokuapp.com/auth?shop=${shop}&state=${state}`)
+    // }
     
     const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}&state=${state}`;
     ctx.redirect(installUrl);
