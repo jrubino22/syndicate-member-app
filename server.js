@@ -77,7 +77,8 @@ app.prepare().then(() => {
   server.keys = ['dsfdaasgadfa'];
   server.use(session({
     key: 'session-id',
-    maxAge: 86400000
+    maxAge: 86400000,
+    secret: server.keys[0]
   }, server));
 
 
@@ -91,7 +92,7 @@ app.prepare().then(() => {
   //installation path
   router.get('/install', async ctx => {
     const shop = ctx.query.shop;
-    const state = await CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
+    const state = CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
     ctx.session.state = state
     const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
     const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}&state=${state}`;
@@ -126,7 +127,7 @@ app.prepare().then(() => {
     const accessToken = accessTokenData.access_token;
     console.log("token", accessToken)
     // Use the access token to make API calls
-      // ctx.session.accessToken = accessToken
+      ctx.session.accessToken = accessToken
     // Redirect the user to the appropriate page
     ctx.redirect('https://syndicate-member.herokuapp.com');
   });
