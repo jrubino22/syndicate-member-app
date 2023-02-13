@@ -132,11 +132,11 @@ app.prepare().then(() => {
     router.get('/auth', async ctx => {
       const { shop, state } = ctx.query;
       console.log("auth, ctx.session")
-      // if (await state !== ctx.session.state) {
-      //   ctx.status = 400;
-      //   ctx.body = { error: `${state  } already  ${  ctx.session.state}`}
-      //   return;
-      // }
+      if (await state !== ctx.session.state) {
+        ctx.status = 400;
+        ctx.body = { error: `${state  } already  ${  ctx.session.state}`}
+        return;
+      }
       const accessToken = process.env.ACCESS_TOKEN 
       ctx.session.accessToken = accessToken
       ctx.redirect('https://syndicate-member.herokuapp.com');
