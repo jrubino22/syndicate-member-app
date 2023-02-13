@@ -133,7 +133,7 @@ app.prepare().then(() => {
     router.get('/auth', async ctx => {
       const { shop, state } = ctx.query;
       console.log("auth2", ctx.session)
-      if (await wholesale-vsyndicate !== ctx.session.store) {
+      if (await ctx.session.store !== "wholesale-vsyndicate") {
         ctx.status = 400;
         ctx.body = { error: `${state  } already  ${  ctx.session.state}`}
         return;
