@@ -52,7 +52,7 @@ app.prepare().then(() => {
         connection: connection
       })
     }, app));
-    }
+    
 
 
   //logger
