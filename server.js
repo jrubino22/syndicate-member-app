@@ -77,10 +77,9 @@ app.prepare().then(() => {
     ctx.session.state = state
     console.log("after", ctx.session)
     const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
-    // if(shop === 'wholesale-vsyndicate.myshopify.com'){
-    //   console.log("wsdfasfd")
-    //   return ctx.redirect(`https://syndicate-member.herokuapp.com/auth?shop=${shop}&state=${state}`)
-    // }
+    if(shop === 'wholesale-vsyndicate.myshopify.com'){
+      return ctx.redirect(`https://syndicate-member.herokuapp.com/auth?shop=${shop}&state=${state}`)
+    }
     
     const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}&state=${state}`;
     ctx.redirect(installUrl);
@@ -124,11 +123,11 @@ app.prepare().then(() => {
     router.get('/auth', async ctx => {
       const { shop, state } = ctx.query;
       console.log("auth, ctx.session")
-      if (await state !== ctx.session.state) {
-        ctx.status = 400;
-        ctx.body = { error: `${state  } already  ${  ctx.session.state}`}
-        return;
-      }
+      // if (await state !== ctx.session.state) {
+      //   ctx.status = 400;
+      //   ctx.body = { error: `${state  } already  ${  ctx.session.state}`}
+      //   return;
+      // }
       const accessToken = process.env.ACCESS_TOKEN 
       ctx.session.accessToken = accessToken
       ctx.redirect('https://syndicate-member.herokuapp.com');
