@@ -4,7 +4,6 @@ const dotenv = require('dotenv');
 const Koa = require('koa');
 const mongoose = require('mongoose');
 const next = require('next');
-const {default: Shopify, ApiVersion } = require('@shopify/shopify-api');
 const Router = require('koa-router');
 const registeredIdModel = require('./models/registeredIdModel');
 const unregisteredIdModel = require('./models/unregisteredIdModel');
@@ -12,8 +11,7 @@ const bodyParser = require('koa-body');
 const cors = require('@koa/cors');
 const google_cal = require('./google_calendar');
 const shopifyApiCalls = require('./shopifyApiCalls');
-const CryptoJS = require("crypto-js");
-const shopifyAuth = require('simple-koa-shopify-auth');
+const CryptoJS = require("crypto-js"); 
 const session = require('koa-session');
 
 dotenv.config();
@@ -27,26 +25,11 @@ mongoose.connect(process.env.MONGO_URL, () => {
   console.log('Connected to Mongo DB');
 });
 
-// Shopify.Context.initialize({
-//   API_KEY: process.env.SHOPIFY_API_KEY,
-//   API_SECRET_KEY: process.env.SHOPIFY_API_SECRET,
-//   SCOPES: ['write_customers','read_customers'],
-//   HOST_NAME: process.env.SHOPIFY_APP_URL.replace(/https:\/\//, ''),
-//   API_VERSION: ApiVersion.June16,
-//   IS_EMBEDDED_APP: true,
-//   SESSION_STORAGE: new Shopify.Session.MemorySessionStorage(),
-// });
-
 const port = process.env.PORT || 5000;
 const dev = process.env.NODE_ENV !== 'production';
 const prod = process.env.NODE_ENV === 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
-
-
-
-
-const ACTIVE_SHOPIFY_SHOPS = {};
 
 app.prepare().then(() => {
   const server = new Koa();
