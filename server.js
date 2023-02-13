@@ -14,7 +14,7 @@ const shopifyApiCalls = require('./shopifyApiCalls');
 const CryptoJS = require("crypto-js"); 
 const session = require('koa-session');
 const logger = require('./logger');
-const MongoStore = require('connect-mongo')(session);;
+const MongooseStore = require("koa-session-mongoose")
 
 dotenv.config();
 
@@ -51,13 +51,13 @@ app.prepare().then(() => {
   server.keys = ["fdsgshse, fasdgre"];
   server.use(
     session({
-      store: new MongoStore({
-        mongooseConnection: mongoose.connection
-      }),
-      key: "koa:sess",
-      maxAge: 86400000
-    }, server)
-  );
+      store: new MongooseStore({
+        collection: 'sessions',
+        expires: 86400,
+      })
+    }, app));
+    }
+
 
   //logger
   server.use(async (ctx, next) => {
