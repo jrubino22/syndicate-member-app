@@ -14,7 +14,7 @@ const shopifyApiCalls = require('./shopifyApiCalls');
 const CryptoJS = require("crypto-js"); 
 const session = require('koa-session');
 const logger = require('./logger');
-const MongoStore = require('koa-session-mongo');
+const MongoStore = require('connect-mongodb-session')(session);;
 
 dotenv.config();
 
@@ -27,6 +27,13 @@ mongoose.connect(process.env.MONGO_URL, () => {
   console.log('Connected to Mongo DB');
 });
 
+const mongoStore = new MongoStore ({
+  uri: process.env.MONGO_URL,
+  collection: sessions
+});
+
+
+
 const port = process.env.PORT || 5000;
 const dev = process.env.NODE_ENV !== 'production';
 const prod = process.env.NODE_ENV === 'production';
@@ -36,6 +43,22 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
   const server = new Koa();
 
+  mongoose.connect(process.env.MONGO_URL, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+  });
+
+  server.keys = ["fdsgshse, fasdgre"];
+  server.use(
+    session({
+      store: new MongoStore({
+        mongooseConnection: mongoose.connection
+      }),
+      key: "koa:sess",
+      maxAge: 86400000
+    }, server)
+  );
+
   //logger
   server.use(async (ctx, next) => {
     const start = Date.now();
@@ -43,14 +66,6 @@ app.prepare().then(() => {
     const ms = Date.now() - start;
     logger.info(`${ctx.method} ${ctx.url} - ${ms}ms`);
   });
-
-  server.keys = ['dsfdaasgadfa'];
-  server.use(session({
-    store: new MongoStore({
-      url: process.env.MONGO_URL,
-      collection: 'sessions',
-    })
-  }, server));
 
   const router = new Router();
   // 
