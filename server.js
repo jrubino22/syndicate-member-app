@@ -131,7 +131,7 @@ app.prepare().then(() => {
     //already installed auth
     router.get('/auth', async ctx => {
       const { shop, state } = ctx.query;
-      console.log("auth, ctx.session")
+      console.log("auth2", ctx.session)
       if (await state !== ctx.session.state) {
         ctx.status = 400;
         ctx.body = { error: `${state  } already  ${  ctx.session.state}`}
