@@ -27,11 +27,6 @@ mongoose.connect(process.env.MONGO_URL, () => {
   console.log('Connected to Mongo DB');
 });
 
-const mongoStore = new MongoStore ({
-  uri: process.env.MONGO_URL,
-  collection: sessions
-});
-
 
 
 const port = process.env.PORT || 5000;
