@@ -14,6 +14,7 @@ const shopifyApiCalls = require('./shopifyApiCalls');
 const CryptoJS = require("crypto-js"); 
 const session = require('koa-session');
 const logger = require('./logger');
+const MongoStore = require('koa-session-mongo');
 
 dotenv.config();
 
@@ -44,7 +45,12 @@ app.prepare().then(() => {
   });
 
   server.keys = ['dsfdaasgadfa'];
-  server.use(session(server));
+  server.use(session({
+    store: new MongoStore({
+      url: process.env.MONGO_URL,
+      collection: 'sessions',
+    })
+  }, server));
 
   const router = new Router();
   // 
