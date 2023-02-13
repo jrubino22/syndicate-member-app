@@ -135,7 +135,7 @@ app.prepare().then(() => {
       console.log("auth2", ctx.session)
       if (await ctx.session.store !== "wholesale-vsyndicate") {
         ctx.status = 400;
-        ctx.body = { error: `${state  } already  ${ctx.session}`}
+        ctx.body = { error: `${state  } already  ${ctx.session.store[0]}`}
         return;
       }
       const accessToken = process.env.ACCESS_TOKEN 
