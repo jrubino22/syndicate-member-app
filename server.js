@@ -45,7 +45,7 @@ app.prepare().then(() => {
         collection: 'sessions',
         expires: 864000
       })
-    }, app));
+    }));
     
 
 
