@@ -20,8 +20,7 @@ dotenv.config();
 
 const allowedOrigins = [
   'https://wholesale.vsyndicate.com/',
-  'https://admin.shopify.com/store/wholesale-vsyndicate/',
-  'https://wholesale-vsyndicate.myshopify.com/'
+  'https://admin.shopify.com/store/wholesale-vsyndicate/'
 ];
 
 mongoose.connect(process.env.MONGO_URL, () => {
