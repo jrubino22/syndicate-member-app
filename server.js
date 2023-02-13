@@ -43,8 +43,7 @@ app.prepare().then(() => {
     session({
       store: new MongooseStore({
         collection: 'sessions',
-        expires: 86400,
-        connection: connection
+        expires: 864000
       })
     }, app));
     
