@@ -13,6 +13,7 @@ const google_cal = require('./google_calendar');
 const shopifyApiCalls = require('./shopifyApiCalls');
 const CryptoJS = require("crypto-js"); 
 const session = require('koa-session');
+const logger = require('./logger');
 
 dotenv.config();
 
@@ -33,6 +34,14 @@ const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
   const server = new Koa();
+
+  //logger
+  server.use(async (ctx, next) => {
+    const start = Date.now();
+    await next();
+    const ms = Date.now() - start;
+    logger.info(`${ctx.method} ${ctx.url} - ${ms}ms`);
+  });
 
   server.keys = ['dsfdaasgadfa'];
   server.use(session(server));
