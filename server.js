@@ -284,7 +284,7 @@ app.prepare().then(() => {
           console.error();
         }
 
-        let thisUrl = `https://${process.env.SHOPIFY_STORE}.myshopify.com/admin/api/2022-07/customers/${ctx.request.body.shopifyCustomerId}.json`;
+        // let thisUrl = `https://${process.env.SHOPIFY_STORE}.myshopify.com/admin/api/2022-07/customers/${ctx.request.body.shopifyCustomerId}.json`;
 
         getResponse = await fetch(thisUrl, {
           method: 'GET',
