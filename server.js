@@ -14,7 +14,7 @@ const shopifyApiCalls = require('./shopifyApiCalls');
 const CryptoJS = require("crypto-js"); 
 const session = require('koa-session');
 const logger = require('./logger');
-const MongoStore = require('connect-mongodb-session')(session);;
+const MongoStore = require('connect-mongo')(session);;
 
 dotenv.config();
 
