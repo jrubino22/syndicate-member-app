@@ -43,17 +43,13 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
   const server = new Koa();
 
-  mongoose.connect(process.env.MONGO_URL, {
-  useNewUrlParser: true,
-  useUnifiedTopology: true
-  });
-
   server.keys = ["fdsgshse, fasdgre"];
   server.use(
     session({
       store: new MongooseStore({
         collection: 'sessions',
         expires: 86400,
+        connection: connection
       })
     }, app));
     }
