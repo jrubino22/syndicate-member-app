@@ -77,7 +77,6 @@ app.prepare().then(() => {
 
   const clientId = process.env.SHOPIFY_API_KEY;
   const clientSecret = process.env.SHOPIFY_API_SECRET;
-  const SHOP_NAME = wholesale-vsyndicate
   
   //installation path
   router.get('/install', async ctx => {
