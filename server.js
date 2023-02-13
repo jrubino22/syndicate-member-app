@@ -77,6 +77,7 @@ app.prepare().then(() => {
 
   const clientId = process.env.SHOPIFY_API_KEY;
   const clientSecret = process.env.SHOPIFY_API_SECRET;
+  const SHOP_NAME = wholesale-vsyndicate
   
   //installation path
   router.get('/install', async ctx => {
@@ -84,6 +85,7 @@ app.prepare().then(() => {
     const state = CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
     console.log("before", ctx.session)
     ctx.session.state = state
+    ctx.session.store = "wholesale-vsyndicate"
     console.log("after", ctx.session)
     const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
     if(shop === 'wholesale-vsyndicate.myshopify.com'){
