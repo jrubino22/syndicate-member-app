@@ -38,7 +38,7 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
   const server = new Koa();
 
-  const sessionSchema = new Schema({
+  const sessionSchema = new mongoose.Schema({
     state: {type: String},
     accessToken: {type: String},
     expires: { type: Date, default: Date.now, expires: '1d' }
