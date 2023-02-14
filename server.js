@@ -70,17 +70,17 @@ app.prepare().then(() => {
     ctx.res.statusCode = 200;
   };
 
-  server.use(cors({
-    origin: function (origin, callback) {
-      // if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        var msg = 'The CORS policy for this site does not ' +
-                  'allow access from the specified Origin.';
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
-    }
-  }));
+  // server.use(cors({
+  //   origin: function (origin, callback) {
+  //     // if (!origin) return callback(null, true);
+  //     if (allowedOrigins.indexOf(origin) === -1) {
+  //       var msg = 'The CORS policy for this site does not ' +
+  //                 'allow access from the specified Origin.';
+  //       return callback(new Error(msg), false);
+  //     }
+  //     return callback(null, true);
+  //   }
+  // }));
   
 
   router.get('(/_next/static/.*)', handleRequest);
@@ -108,9 +108,9 @@ app.prepare().then(() => {
   router.get('/auth/callback', async ctx => {
     const { code, shop, state } = ctx.query;
     console.log("auth", ctx.session)
-    if (await state !== ctx.session.state) {
+    if ( state !== await ctx.session.state) {
       ctx.status = 400;
-      ctx.body = { error: `${state  }   ${  ctx.session.state}`}
+      ctx.body = { error: `${state  }   ${ await ctx.session.state}`}
       return;
     }
 
