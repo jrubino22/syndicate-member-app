@@ -38,23 +38,13 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
   const server = new Koa();
 
-  if (!mongoose.models.Session) {
-  const sessionSchema = new mongoose.Schema({
-    state: {type: String},
-    accessToken: {type: String},
-    expires: { type: Date, default: Date.now, expires: '1d' }
-  });
-  const Session = mongoose.model('Session', sessionSchema, 'sessions');
-}
 
   server.keys = ["fdsgshse, fasdgre"];
   server.use(
     session({
       store: new MongooseStore({
         collection: 'sessions',
-        expires: 864000,
-        mongooseConnection: mongoose.connection,
-        model: Session
+        expires: 864000
       })
     }, server));
     
