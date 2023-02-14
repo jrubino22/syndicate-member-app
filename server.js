@@ -38,12 +38,21 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
   const server = new Koa();
 
+  const sessionSchema = new Schema({
+    state: {type: String},
+    accessToken: {type: String},
+    expires: { type: Date, default: Date.now, expires: '1d' }
+  });
+  const Session = mongoose.model('Session', sessionSchema, 'sessions');
+
   server.keys = ["fdsgshse, fasdgre"];
   server.use(
     session({
       store: new MongooseStore({
         collection: 'sessions',
-        expires: 864000
+        expires: 864000,
+        mongooseConnection: mongoose.connection,
+        model: Session
       })
     }, server));
     
@@ -95,12 +104,8 @@ app.prepare().then(() => {
     const state = CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
     console.log("before", ctx.session)
     ctx.session.state = state
-    ctx.session.store = "wholesale-vsyndicate"
     console.log("after", ctx.session)
     const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
-    if(shop === 'wholesale-vsyndicate.myshopify.com'){
-      return ctx.redirect(`https://syndicate-member.herokuapp.com/auth?shop=${shop}&state=${state}`)
-    }
     
     const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}&state=${state}`;
     ctx.redirect(installUrl);
@@ -138,21 +143,6 @@ app.prepare().then(() => {
     // Redirect the user to the appropriate page
     ctx.redirect('https://syndicate-member.herokuapp.com');
   });
-
-  
-    //already installed auth
-    router.get('/auth', async ctx => {
-      const { shop, state } = ctx.query;
-      console.log("auth2", ctx.session)
-      if (await ctx.session.store !== "wholesale-vsyndicate") {
-        ctx.status = 400;
-        ctx.body = { error: `${state  } already  ${ctx.session.store[0]}`}
-        return;
-      }
-      const accessToken = process.env.ACCESS_TOKEN 
-      ctx.session.accessToken = accessToken
-      ctx.redirect('https://syndicate-member.herokuapp.com');
-    })
 
 
   //get all unregistered cards
