@@ -46,10 +46,7 @@ app.prepare().then(() => {
         collection: 'sessions',
         expires: 864000
       }),
-      cookie: {
-        sameSite: 'none',
-        secure: true
-      }
+      sameSite: 'none',
     }, server));
     
 
