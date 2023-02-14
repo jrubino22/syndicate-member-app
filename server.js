@@ -96,6 +96,7 @@ app.prepare().then(() => {
     const state = CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
     console.log("before", ctx.session)
     ctx.session.state = state
+    await ctx.session.save();
     console.log("after", ctx.session)
     const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
     
