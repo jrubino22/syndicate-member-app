@@ -375,6 +375,8 @@ const httpsServer = https.createServer({
   cert: process.env.CERTIFICATE
   },server.callback);
 
+  httpsServer.timeout = 60000;
+
   httpsServer.listen(port, () => {
     console.log(`Ready on ${port}`);
   });
