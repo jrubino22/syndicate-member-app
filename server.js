@@ -369,9 +369,12 @@ app.prepare().then(() => {
   server.use(router.allowedMethods());
   server.use(router.routes());
 
-// const httpsServer = https.createServer(server.callback());
+const httpsServer = https.createServer({
+  key: process.env.PRIVATE_KEY,
+  cert: process.env.CERTIFICATE
+},server.callback());
 
-  server.listen(port, () => {
+  httpsServer.listen(port, () => {
     console.log(`Ready on ${port}`);
   });
 });
