@@ -84,7 +84,7 @@ const Index = ({ member }) => {
 };
 
 export async function getServerSideProps() {
-  const response = await fetch('https://member.vsyndicate.com/api/members');
+  const response = await fetch('/api/members');
   const data = await response.json();
 
   return {
