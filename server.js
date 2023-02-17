@@ -16,6 +16,7 @@ const session = require('koa-session');
 const logger = require('./logger');
 const MongooseStore = require('koa-session-mongoose');
 const https = require('https')
+const fs = require('fs');
 
 dotenv.config();
 
@@ -370,9 +371,9 @@ app.prepare().then(() => {
   server.use(router.routes());
 
 const httpsServer = https.createServer({
-  key: process.env.PRIVATE_KEY,
-  cert: process.env.CERTIFICATE
-},server.callback());
+  key: fs.readFileSync(process.env.PRIVATE_KEY),
+  cert: fs.readFileSync(process.env.CERTIFICATE)
+  },server.callback());
 
   httpsServer.listen(port, () => {
     console.log(`Ready on ${port}`);
