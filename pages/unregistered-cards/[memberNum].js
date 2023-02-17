@@ -34,6 +34,8 @@ const SendCard = ({ card }) => {
       headers: {
         'Content-Type': 'application/json',
         Accept: 'application/json',
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'PUT',
       },
       body: formDataJsonString,
     };
