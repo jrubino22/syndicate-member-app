@@ -15,7 +15,6 @@ const CryptoJS = require('crypto-js');
 const session = require('koa-session');
 const logger = require('./logger');
 const MongooseStore = require('koa-session-mongoose');
-const http = require('http');
 const https = require('https')
 
 dotenv.config();
@@ -23,6 +22,7 @@ dotenv.config();
 const allowedOrigins = [
   'https://wholesale.vsyndicate.com/',
   'https://admin.shopify.com/store/wholesale-vsyndicate/',
+  'https://member.vsyndicate.com'
 ];
 
 mongoose.connect(process.env.MONGO_URL, () => {
