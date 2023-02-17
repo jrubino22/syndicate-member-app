@@ -12,7 +12,7 @@ const SendCard = ({ card }) => {
   };
 
   async function handleFormSubmit() {
-    const thisUrl = `https://syndicate-member.herokuapp.com/api/send/${urlParam}`;
+    const thisUrl = `https://member.vsyndicate.com/api/send/${urlParam}`;
     if (!window.confirm('Mark card sent?')) {
       return;
     }
@@ -38,7 +38,7 @@ const SendCard = ({ card }) => {
       body: formDataJsonString,
     };
     const response = await fetch(
-      `https://syndicate-member.herokuapp.com/api/send/${card[0].memberId}`,
+      `https://member.vsyndicate.com/api/send/${card[0].memberId}`,
       fetchOptions
     );
 
@@ -88,7 +88,7 @@ const SendCard = ({ card }) => {
 
 export async function getServerSideProps(props) {
   const response = await fetch(
-    `https://syndicate-member.herokuapp.com/api/unregistered/${props.query.memberNum}`
+    `https://member.vsyndicate.com/api/unregistered/${props.query.memberNum}`
   );
   const data = await response.json();
 

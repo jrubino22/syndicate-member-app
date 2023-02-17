@@ -2,7 +2,6 @@ import Link from 'next/link';
 import { useState } from 'react';
 
 const Index = ({ member }) => {
-
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
 
@@ -24,10 +23,14 @@ const Index = ({ member }) => {
             </Link>
           </li>
           <li>
-            <Link href="/sent-cards"><a className="menu-txt">Sent & Unregistered</a></Link>
+            <Link href="/sent-cards">
+              <a className="menu-txt">Sent & Unregistered</a>
+            </Link>
           </li>
           <li>
-            <Link href="/unregistered-cards"><a className="menu-txt">Unsent Cards</a></Link>
+            <Link href="/unregistered-cards">
+              <a className="menu-txt">Unsent Cards</a>
+            </Link>
           </li>
         </ul>
       </div>
@@ -39,50 +42,49 @@ const Index = ({ member }) => {
             value={searchTerm}
             onChange={handleSearch}
           />
-        </div>  
-          {searchResults.length > 0
-            ? searchResults.map(({  _Id, customerEmail, cardTier, accountNumber  }) => (
+        </div>
+        {searchResults.length > 0
+          ? searchResults.map(
+              ({ _Id, customerEmail, cardTier, accountNumber }) => (
+                <div key={_Id} className="border">
+                  <p>
+                    <span> Customer Email: {customerEmail} </span>|
+                    <span> Membership Tier: {cardTier} </span>|
+                    <span> Account Number: {accountNumber} </span>
+                    <Link
+                      key={_Id}
+                      href={`/view-member/${accountNumber}`}
+                      className="editButton"
+                    >
+                      <button className="editButton">View Member</button>
+                    </Link>
+                  </p>
+                </div>
+              )
+            )
+          : member.map(({ _Id, customerEmail, cardTier, accountNumber }) => (
               <div key={_Id} className="border">
-              <p>
-                <span> Customer Email: {customerEmail} </span>|
-                <span> Membership Tier: {cardTier} </span>|
-                <span> Account Number: {accountNumber} </span>
-                <Link
-                  key={_Id}
-                  href={`/view-member/${accountNumber}`}
-                  className="editButton"
-                >
-                  <button className="editButton">View Member</button>
-                </Link>
-              </p>
-            </div>
-              ))
-            : 
-          member.map(({ _Id, customerEmail, cardTier, accountNumber }) => (
-            <div key={_Id} className="border">
-              <p>
-                <span> Customer Email: {customerEmail} </span>|
-                <span> Membership Tier: {cardTier} </span>|
-                <span> Account Number: {accountNumber} </span>
-                <Link
-                  key={_Id}
-                  href={`/view-member/${accountNumber}`}
-                  className="editButton"
-                >
-                  <button className="editButton">View Member</button>
-                </Link>
-              </p>
-            </div>
-          ))}
+                <p>
+                  <span> Customer Email: {customerEmail} </span>|
+                  <span> Membership Tier: {cardTier} </span>|
+                  <span> Account Number: {accountNumber} </span>
+                  <Link
+                    key={_Id}
+                    href={`/view-member/${accountNumber}`}
+                    className="editButton"
+                  >
+                    <button className="editButton">View Member</button>
+                  </Link>
+                </p>
+              </div>
+            ))}
       </div>
     </div>
   );
 };
 
 export async function getServerSideProps() {
-  const response = await fetch(
-    'https://syndicate-member.herokuapp.com/api/members'
-  );
+  const response = await fetch('https://member.vsyndicate.com/api/members');
   const data = await response.json();
 
   return {

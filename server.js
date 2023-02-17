@@ -1,5 +1,5 @@
 const fetch = require('isomorphic-fetch');
-const queryString = require('query-string')
+const queryString = require('query-string');
 const dotenv = require('dotenv');
 const Koa = require('koa');
 const mongoose = require('mongoose');
@@ -11,23 +11,21 @@ const bodyParser = require('koa-body');
 const cors = require('@koa/cors');
 const google_cal = require('./google_calendar');
 const shopifyApiCalls = require('./shopifyApiCalls');
-const CryptoJS = require("crypto-js"); 
+const CryptoJS = require('crypto-js');
 const session = require('koa-session');
 const logger = require('./logger');
-const MongooseStore = require("koa-session-mongoose")
+const MongooseStore = require('koa-session-mongoose');
 
 dotenv.config();
 
 const allowedOrigins = [
   'https://wholesale.vsyndicate.com/',
-  'https://admin.shopify.com/store/wholesale-vsyndicate/'
+  'https://admin.shopify.com/store/wholesale-vsyndicate/',
 ];
 
 mongoose.connect(process.env.MONGO_URL, () => {
   console.log('Connected to Mongo DB');
 });
-
-
 
 const port = process.env.PORT || 5000;
 const dev = process.env.NODE_ENV !== 'production';
@@ -38,19 +36,20 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
   const server = new Koa();
 
-
-  server.keys = ["fdsgshse, fasdgre"];
+  server.keys = ['fdsgshse, fasdgre'];
   server.use(
-    session({
-      store: new MongooseStore({
-        collection: 'sessions',
-        expires: 864000
-      }),
-      sameSite: 'none',
-      secure: 'true',
-    }, server));
-    
-
+    session(
+      {
+        store: new MongooseStore({
+          collection: 'sessions',
+          expires: 864000,
+        }),
+        sameSite: 'none',
+        secure: 'true',
+      },
+      server
+    )
+  );
 
   //logger
   server.use(async (ctx, next) => {
@@ -61,84 +60,88 @@ app.prepare().then(() => {
   });
 
   const router = new Router();
-  // 
-  
+  //
+
   // server.keys = [Shopify.Context.API_SECRET_KEY];
 
   const handleRequest = async (ctx) => {
-  
     await handle(ctx.req, ctx.res);
     ctx.respond = true;
     ctx.res.statusCode = 200;
   };
 
-  server.use(cors({
-    origin: function (origin, callback) {
-      // if (!origin) return callback(null, true);
-      if (allowedOrigins.indexOf(origin) === -1) {
-        var msg = 'The CORS policy for this site does not ' +
-                  'allow access from the specified Origin.';
-        return callback(new Error(msg), false);
-      }
-      return callback(null, true);
-    }
-  }));
-  
+  server.use(
+    cors({
+      origin: function (origin, callback) {
+        // if (!origin) return callback(null, true);
+        if (allowedOrigins.indexOf(origin) === -1) {
+          var msg =
+            'The CORS policy for this site does not ' +
+            'allow access from the specified Origin.';
+          return callback(new Error(msg), false);
+        }
+        return callback(null, true);
+      },
+    })
+  );
 
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);
 
-
   const clientId = process.env.SHOPIFY_API_KEY;
   const clientSecret = process.env.SHOPIFY_API_SECRET;
-  
+
   //installation path
-  router.get('/install', async ctx => {
+  router.get('/install', async (ctx) => {
     const shop = ctx.query.shop;
-    const state = CryptoJS.lib.WordArray.random(128/8).toString(CryptoJS.enc.Hex);
-    console.log("before", ctx.session)
-    ctx.session.state = state
+    const state = CryptoJS.lib.WordArray.random(128 / 8).toString(
+      CryptoJS.enc.Hex
+    );
+    console.log('before', ctx.session);
+    ctx.session.state = state;
     await ctx.session.save();
-    console.log("after", ctx.session)
-    const redirectUri = 'https://syndicate-member.herokuapp.com/auth/callback';
-    
+    console.log('after', ctx.session);
+    const redirectUri = 'https://member.vsyndicate.com/auth/callback';
+
     const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}&state=${state}`;
     ctx.redirect(installUrl);
   });
 
   //install auth path
-  router.get('/auth/callback', async ctx => {
+  router.get('/auth/callback', async (ctx) => {
     const { code, shop, state } = ctx.query;
-    console.log("auth", ctx.session)
-    if ( state !== await ctx.session.state) {
+    console.log('auth', ctx.session);
+    if (state !== (await ctx.session.state)) {
       ctx.status = 400;
-      ctx.body = { error: `${state  }   ${ await ctx.session.state}`}
+      ctx.body = { error: `${state}   ${await ctx.session.state}` };
       return;
     }
 
-    const accessTokenResponse = await fetch(`https://${shop}/admin/oauth/access_token`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        client_id: clientId,
-        client_secret: clientSecret,
-        code
-      })
-    });
+    const accessTokenResponse = await fetch(
+      `https://${shop}/admin/oauth/access_token`,
+      {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          client_id: clientId,
+          client_secret: clientSecret,
+          code,
+        }),
+      }
+    );
     if (accessTokenResponse.status !== 200) {
       ctx.status = accessTokenResponse.status;
-      ctx.body = { error: "Failed to obtain access token." };
+      ctx.body = { error: 'Failed to obtain access token.' };
       return;
     }
     const accessTokenData = await accessTokenResponse.json();
     const accessToken = accessTokenData.access_token;
-    console.log("token", accessToken)
+    console.log('token', accessToken);
     // Use the access token to make API calls
-      ctx.session.accessToken = accessToken
+    ctx.session.accessToken = accessToken;
     // Redirect the user to the appropriate page
-    ctx.redirect('https://syndicate-member.herokuapp.com');
+    ctx.redirect('https://member.vsyndicate.com');
   });
-
 
   //get all unregistered cards
   router.get('/api/unregistered', async (ctx) => {
@@ -358,7 +361,7 @@ app.prepare().then(() => {
       response;
     }, 5 * 60 * 1000);
   }
-  keepAwake('https://syndicate-member.herokuapp.com');
+  keepAwake('https://member.vsyndicate.com');
 
   router.get('(.*)', handleRequest);
   server.use(router.allowedMethods());
