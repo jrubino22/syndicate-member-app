@@ -372,6 +372,6 @@ app.prepare().then(() => {
   const httpsServer = https.createServer(server.callback());
 
   httpsServer.listen(port, () => {
-    console.log(`Ready on https://localhost:${port}`);
+    console.log(`Ready on ${port}`);
   });
 });
