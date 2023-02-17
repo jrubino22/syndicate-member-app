@@ -370,14 +370,14 @@ app.prepare().then(() => {
   server.use(router.allowedMethods());
   server.use(router.routes());
 
-const httpsServer = https.createServer({
-  key: process.env.PRIVATE_KEY,
-  cert: process.env.CERTIFICATE
-  },server.callback);
+// const httpsServer = https.createServer({
+//   key: process.env.PRIVATE_KEY,
+//   cert: process.env.CERTIFICATE
+//   },server.callback);
 
-  httpsServer.timeout = 60000;
+//   httpsServer.timeout = 60000;
 
-  httpsServer.listen(port, () => {
+  server.listen(port, () => {
     console.log(`Ready on ${port}`);
   });
 });
