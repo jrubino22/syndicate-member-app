@@ -371,9 +371,9 @@ app.prepare().then(() => {
   server.use(router.routes());
 
 const httpsServer = https.createServer({
-  key: fs.readFileSync(process.env.PRIVATE_KEY),
-  cert: fs.readFileSync(process.env.CERTIFICATE)
-  },server.callback());
+  key: process.env.PRIVATE_KEY,
+  cert: process.env.CERTIFICATE
+  },server.callback);
 
   httpsServer.listen(port, () => {
     console.log(`Ready on ${port}`);
