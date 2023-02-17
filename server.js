@@ -369,9 +369,9 @@ app.prepare().then(() => {
   server.use(router.allowedMethods());
   server.use(router.routes());
 
-  const httpsServer = https.createServer(server.callback());
+// const httpsServer = https.createServer(server.callback());
 
-  httpsServer.listen(port, () => {
+  server.listen(port, () => {
     console.log(`Ready on ${port}`);
   });
 });
