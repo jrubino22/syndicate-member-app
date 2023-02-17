@@ -15,6 +15,8 @@ const CryptoJS = require('crypto-js');
 const session = require('koa-session');
 const logger = require('./logger');
 const MongooseStore = require('koa-session-mongoose');
+const http = require('http');
+const https = require('https')
 
 dotenv.config();
 
@@ -367,7 +369,9 @@ app.prepare().then(() => {
   server.use(router.allowedMethods());
   server.use(router.routes());
 
-  server.listen(port, () => {
-    console.log(`Ready on http://localhost:${port}`);
+  const httpsServer = https.createServer(server.callback());
+
+  httpsServer.listen(port, () => {
+    console.log(`Ready on https://localhost:${port}`);
   });
 });
