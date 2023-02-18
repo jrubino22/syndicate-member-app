@@ -99,6 +99,7 @@ export async function getServerSideProps(context) {
     //   },
     // }
     );
+    console.log("front", context.req.session.accessToken)
     const data = await response.json();
     return {
       props: {
