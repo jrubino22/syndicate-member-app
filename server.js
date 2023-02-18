@@ -47,7 +47,7 @@ app.prepare().then(() => {
           expires: 864000,
         }),
         sameSite: 'none',
-        secure: 'true',
+        secure: 'false',
         proxy: true,
       },
       server
