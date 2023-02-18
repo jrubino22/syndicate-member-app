@@ -97,14 +97,12 @@ app.prepare().then(() => {
   //installation path
   router.get('/install', async (ctx) => {
     const shop = ctx.query.shop;
-    // const state = CryptoJS.lib.WordArray.random(128 / 8).toString(
-    //   CryptoJS.enc.Hex
-    // );
-    // console.log('before', ctx.session);
-    // ctx.session.state = state;
-    // await ctx.session.save();
-    // console.log('after', ctx.session);
-    const state = "state"
+    const state = CryptoJS.lib.WordArray.random(128 / 8).toString(
+      CryptoJS.enc.Hex
+    );
+    console.log('before', ctx.session);
+    ctx.session.state = state;
+    console.log('after', ctx.session);
     const redirectUri = 'https://member.vsyndicate.com/auth/callback';
 
     const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}&state=${state}`;
@@ -114,12 +112,12 @@ app.prepare().then(() => {
   //install auth path
   router.get('/auth/callback', async (ctx) => {
     const { code, shop, state } = ctx.query;
-    // console.log('auth', ctx.session);
-    // if (state !== (await ctx.session.state)) {
-    //   ctx.status = 400;
-    //   ctx.body = { error: `${state}   ${await ctx.session.state}` };
-    //   return;
-    // }
+    console.log('auth', ctx.session);
+    if (state !== (await ctx.session.state)) {
+      ctx.status = 400;
+      ctx.body = { error: `${state}   ${await ctx.session.state}` };
+      return;
+    }
 
     const accessTokenResponse = await fetch(
       `https://${shop}/admin/oauth/access_token`,
@@ -142,7 +140,7 @@ app.prepare().then(() => {
     const accessToken = accessTokenData.access_token;
     console.log('token', accessToken);
     // Use the access token to make API calls
-    // ctx.session.accessToken = accessToken;
+    ctx.session.accessToken = accessToken;
     // Redirect the user to the appropriate page
     ctx.redirect('https://member.vsyndicate.com');
   });
