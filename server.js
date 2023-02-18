@@ -36,7 +36,7 @@ const app = next({ dev });
 const handle = app.getRequestHandler();
 
 app.prepare().then(() => {
-  const server = new Koa();
+  const server = new Koa({proxy: true});
 
   server.keys = ['fdsgshse, fasdgre'];
   server.use(
