@@ -147,7 +147,9 @@ app.prepare().then(() => {
     ctx.session.accessToken = accessToken;
     console.log("aat", ctx.session)
     // Redirect the user to the appropriate page
-    ctx.redirect('https://member.vsyndicate.com');
+    ctx.status = 302; // set redirect status code
+    ctx.set('Location', 'https://member.vsyndicate.com'); // set redirect URL in Location header
+    ctx.body = 'Redirecting...'; // include response body for server-side redirect
   });
 
   //get all unregistered cards
