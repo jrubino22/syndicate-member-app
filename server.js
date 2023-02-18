@@ -15,8 +15,7 @@ const CryptoJS = require('crypto-js');
 const session = require('koa-session');
 const logger = require('./logger');
 const MongooseStore = require('koa-session-mongoose');
-const https = require('https')
-const fs = require('fs');
+
 
 dotenv.config();
 
@@ -48,7 +47,7 @@ app.prepare().then(() => {
           expires: 864000,
         }),
         sameSite: 'none',
-        secure: 'true',
+        // secure: 'true',
       },
       server
     )
