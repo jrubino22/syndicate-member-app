@@ -1,7 +1,10 @@
 import Link from 'next/link';
 import { useState } from 'react';
 
-const Index = ({ member }) => {
+const Index = ({ member, error }) => {
+  if (error) {
+    return <div>{error.message}</div>;
+  }
   const [searchTerm, setSearchTerm] = useState('');
   const [searchResults, setSearchResults] = useState([]);
 
@@ -84,14 +87,24 @@ const Index = ({ member }) => {
 };
 
 export async function getServerSideProps() {
-  const response = await fetch('https://member.vsyndicate.com/api/members');
-  const data = await response.json();
+  try{
+    const response = await fetch('https://member.vsyndicate.com/api/members');
+    const data = await response.json();
 
-  return {
-    props: {
-      member: data,
-    },
-  };
+    return {
+      props: {
+        member: data,
+      },
+    };
+  } catch (error) {
+    ctx.res.statusCode = 401;
+    return {
+      props: {
+        error: { message: "Shopify access token is required" },
+      },
+    };
+  }
 }
+
 
 export default Index;

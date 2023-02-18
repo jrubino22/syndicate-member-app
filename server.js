@@ -141,7 +141,7 @@ app.prepare().then(() => {
     // Use the access token to make API calls
     console.log("b4at", ctx.session)
     ctx.session.accessToken = accessToken;
-    console.log("aat", accessToken)
+    console.log("aat", ctx.session)
     // Redirect the user to the appropriate page
     ctx.redirect('https://member.vsyndicate.com');
   });
@@ -188,6 +188,7 @@ app.prepare().then(() => {
 
   // get all members
   router.get('/api/members', async (ctx) => {
+    console.log("members", ctx.session)
     if (!ctx.session.accessToken) {
       ctx.status = 401;
       ctx.body = { error: "Shopify access token is required" };
