@@ -139,7 +139,9 @@ app.prepare().then(() => {
     const accessToken = accessTokenData.access_token;
     console.log('token', accessToken);
     // Use the access token to make API calls
+    console.log("b4at", ctx.session)
     ctx.session.accessToken = accessToken;
+    console.log("aat", accessToken)
     // Redirect the user to the appropriate page
     ctx.redirect('https://member.vsyndicate.com');
   });
