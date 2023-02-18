@@ -92,14 +92,15 @@ const Index = ({ member, error }) => {
 export async function getServerSideProps(context) {
   try {
     const response = await fetch('https://member.vsyndicate.com/api/members'
-    // , {
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': 'Bearer ' + context.req.session.accessToken,
-    //   },
-    // }
+    , {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + context.req.session.accessToken,
+      },
+    }
     );
     const data = await response.json();
+    console.log("front end", context.req.session.accessToken)
 
     return {
       props: {
@@ -107,6 +108,7 @@ export async function getServerSideProps(context) {
       },
     };
   } catch (error) {
+    console.log("front end error", context.req.session.accessToken)
     return {
       props: {
         error: { message: "Shopify access token is required" },
