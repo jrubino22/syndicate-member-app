@@ -1,5 +1,7 @@
 const fetch = require('isomorphic-fetch');
-const queryString = require('query-string');
+const session = require('koa-session');
+const logger = require('./logger');
+const MongooseStore = require('koa-session-mongoose');
 const dotenv = require('dotenv');
 const Koa = require('koa');
 const mongoose = require('mongoose');
@@ -12,9 +14,7 @@ const cors = require('@koa/cors');
 const google_cal = require('./google_calendar');
 const shopifyApiCalls = require('./shopifyApiCalls');
 const CryptoJS = require('crypto-js');
-const session = require('koa-session');
-const logger = require('./logger');
-const MongooseStore = require('koa-session-mongoose');
+
 
 
 dotenv.config();
@@ -38,7 +38,7 @@ const handle = app.getRequestHandler();
 app.prepare().then(() => {
   const server = new Koa({proxy: true});
 
-  server.keys = ['fdsgshse, fasdgre'];
+  server.keys = ['fdsgshse'];
   server.use(
     session(
       {
@@ -47,7 +47,7 @@ app.prepare().then(() => {
           expires: 864000,
         }),
         sameSite: 'none',
-        secure: 'false',
+        secure: 'true',
         proxy: true,
       },
       server
@@ -115,7 +115,7 @@ app.prepare().then(() => {
     console.log('auth', ctx.session);
     if (state !== (await ctx.session.state)) {
       ctx.status = 400;
-      ctx.body = { error: `${state}   ${await ctx.session.state}` };
+      ctx.body = { error: `session not persisting` };
       return;
     }
 
