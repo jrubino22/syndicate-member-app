@@ -189,11 +189,11 @@ app.prepare().then(() => {
   // get all members
   router.get('/api/members', async (ctx) => {
     console.log("members", ctx.session)
-    if (!ctx.session.accessToken) {
-      ctx.status = 401;
-      ctx.body = { error: "Shopify access token is required" };
-      return;
-    }
+    // if (!ctx.session.accessToken) {
+    //   ctx.status = 401;
+    //   ctx.body = { error: "Shopify access token is required" };
+    //   return;
+    // }
     ctx.body = await registeredIdModel.find();
   });
 
