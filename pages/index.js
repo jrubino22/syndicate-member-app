@@ -86,9 +86,14 @@ const Index = ({ member, error }) => {
   );
 };
 
-export async function getServerSideProps() {
-  try{
-    const response = await fetch('https://member.vsyndicate.com/api/members');
+export async function getServerSideProps(context) {
+  try {
+    const response = await fetch('https://member.vsyndicate.com/api/members', {
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + context.req.session.accessToken,
+      },
+    });
     const data = await response.json();
 
     return {
@@ -97,7 +102,6 @@ export async function getServerSideProps() {
       },
     };
   } catch (error) {
-    ctx.res.statusCode = 401;
     return {
       props: {
         error: { message: "Shopify access token is required" },
@@ -105,6 +109,5 @@ export async function getServerSideProps() {
     };
   }
 }
-
 
 export default Index;
