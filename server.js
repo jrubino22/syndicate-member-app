@@ -1,7 +1,7 @@
 const fetch = require('isomorphic-fetch');
+const MongooseStore = require('koa-session-mongoose');
 const session = require('koa-session');
 const logger = require('./logger');
-const MongooseStore = require('koa-session-mongoose');
 const dotenv = require('dotenv');
 const Koa = require('koa');
 const mongoose = require('mongoose');
@@ -35,17 +35,20 @@ const prod = process.env.NODE_ENV === 'production';
 const app = next({ dev });
 const handle = app.getRequestHandler();
 
+const sessionStore = new MongooseStore({
+  collection: 'sessions',
+  expires: 864000,
+});
+
 app.prepare().then(() => {
   const server = new Koa({proxy: true});
+
 
   server.keys = ['fdsgshse'];
   server.use(
     session(
       {
-        store: new MongooseStore({
-          collection: 'sessions',
-          expires: 864000,
-        }),
+        store: sessionStore,
         sameSite: 'none',
         secure: 'true',
         proxy: true,
@@ -189,7 +192,7 @@ app.prepare().then(() => {
 
   // get all members
   router.get('/api/members', async (ctx) => {
-    console.log("members", ctx.session)
+    console.log("last", ctx.session)
     if (!ctx.session.accessToken) {
       ctx.status = 401;
       ctx.body = { error: "Shopify access token is required" };
