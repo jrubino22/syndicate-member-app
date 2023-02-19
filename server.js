@@ -147,13 +147,12 @@ app.prepare().then(() => {
     ctx.session.accessToken = accessToken;
     console.log("aat", ctx.session)
     // Redirect the user to the appropriate page
-    ctx.status = 302; // set redirect status code
-    ctx.set('Location', 'https://member.vsyndicate.com'); // set redirect URL in Location header
-    ctx.body = 'Redirecting...'; // include response body for server-side redirect
+    ctx.redirect( 'https://member.vsyndicate.com/unregistered-cards') 
   });
 
   //get all unregistered cards
   router.get('/api/unregistered', async (ctx) => {
+    console.log("unreg", ctx.session)
     ctx.body = await unregisteredIdModel.find();
   });
 
