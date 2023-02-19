@@ -92,7 +92,7 @@ app.prepare().then(() => {
   const clientSecret = process.env.SHOPIFY_API_SECRET;
 
   //installation path
-  router.get('/install', async (ctx, next) => {
+  router.get('/install', async (ctx) => {
     const shop = ctx.query.shop;
     const state = CryptoJS.lib.WordArray.random(128 / 8).toString(
       CryptoJS.enc.Hex
@@ -141,13 +141,18 @@ app.prepare().then(() => {
     ctx.session.accessToken = accessToken;
     console.log("aat", ctx.session)
     // Redirect the user to the appropriate page
-    ctx.redirect( 'https://member.vsyndicate.com/') 
+    ctx.redirect( 'https://member.vsyndicate.com/unregistered-cards') 
     console.log("after redirect", ctx.session)
   });
 
   //get all unregistered cards
   router.get('/api/unregistered', async (ctx) => {
     console.log("unreg", ctx.session)
+    if (!ctx.session.accessToken) {
+      ctx.status = 401;
+      ctx.body = { error: "Shopify access token is required" };
+      return;
+    }
     ctx.body = await unregisteredIdModel.find();
   });
 

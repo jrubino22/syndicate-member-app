@@ -99,6 +99,7 @@ export async function getServerSideProps(context) {
     }
   );
   const data = await response.json();
+
     return {
       props: {
         member: data,
