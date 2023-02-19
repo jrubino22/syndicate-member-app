@@ -141,7 +141,7 @@ app.prepare().then(() => {
     ctx.session.accessToken = accessToken;
     console.log("aat", ctx.session)
     // Redirect the user to the appropriate page
-    ctx.redirect( 'https://member.vsyndicate.com/unregistered-cards') 
+    ctx.redirect( 'https://member.vsyndicate.com/') 
     console.log("after redirect", ctx.session)
   });
 
@@ -189,11 +189,11 @@ app.prepare().then(() => {
   // get all members
   router.get('/api/members', async (ctx) => {
     console.log("last", ctx.session)
-    // if (!ctx.session.accessToken) {
-    //   ctx.status = 401;
-    //   ctx.body = { error: "Shopify access token is required" };
-    //   return;
-    // }
+    if (!ctx.session.accessToken) {
+      ctx.status = 401;
+      ctx.body = { error: "Shopify access token is required" };
+      return;
+    }
     ctx.body = await registeredIdModel.find();
   });
 

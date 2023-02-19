@@ -91,16 +91,14 @@ const Index = ({ member, error }) => {
 
 export async function getServerSideProps(context) {
   try {
-    const response = await fetch('https://member.vsyndicate.com/api/members'
-    // , {
-    //   headers: {
-    //     'Content-Type': 'application/json',
-    //     'Authorization': 'Bearer ' + context.req.session.accessToken,
-    //   },
-    // }
-    );
-    console.log("front", context.req.session.accessToken)
-    const data = await response.json();
+    const response = await fetch('https://member.vsyndicate.com/api/members',
+    {
+      headers: {
+        cookie: req.headers.cookie
+      }
+    }
+  );
+  const data = await response.json();
     return {
       props: {
         member: data,

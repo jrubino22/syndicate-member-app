@@ -99,7 +99,6 @@ export async function getServerSideProps({ req }) {
     }
   );
   const data = await response.json();
-
   return {
     props: {
       card: data,
