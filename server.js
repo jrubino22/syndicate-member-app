@@ -50,20 +50,12 @@ app.prepare().then(() => {
       {
         store: sessionStore,
         sameSite: 'none',
-        secure: 'true',
+        secure: true,
         proxy: true,
       },
       server
     )
   );
-
-  //logger
-  server.use(async (ctx, next) => {
-    const start = Date.now();
-    await next();
-    const ms = Date.now() - start;
-    logger.info(`${ctx.method} ${ctx.url} - ${ms}ms`);
-  });
 
   const router = new Router();
   //
