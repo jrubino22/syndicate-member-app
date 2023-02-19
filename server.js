@@ -103,7 +103,6 @@ app.prepare().then(() => {
     const redirectUri = 'https://member.vsyndicate.com/auth/callback';
 
     const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}&state=${state}`;
-    await next();
     ctx.redirect(installUrl);
   });
 
@@ -142,8 +141,8 @@ app.prepare().then(() => {
     ctx.session.accessToken = accessToken;
     console.log("aat", ctx.session)
     // Redirect the user to the appropriate page
-    await next();
     ctx.redirect( 'https://member.vsyndicate.com/unregistered-cards') 
+    console.log("after redirect", ctx.session)
   });
 
   //get all unregistered cards
