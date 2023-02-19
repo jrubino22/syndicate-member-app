@@ -89,9 +89,14 @@ const UnregisteredCards = ({ card }) => {
   );
 };
 
-export async function getServerSideProps() {
+export async function getServerSideProps({ req }) {
   const response = await fetch(
-    'https://member.vsyndicate.com/api/unregistered'
+    'https://member.vsyndicate.com/api/unregistered',
+    {
+      headers: {
+        cookie: req.headers.cookie
+      }
+    }
   );
   const data = await response.json();
 

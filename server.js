@@ -107,7 +107,7 @@ app.prepare().then(() => {
   });
 
   //auth path
-  router.get('/auth/callback', async (ctx, next) => {
+  router.get('/auth/callback', async (ctx) => {
     const { code, shop, state } = ctx.query;
     console.log('auth', ctx.session);
     if (state !== (await ctx.session.state)) {
