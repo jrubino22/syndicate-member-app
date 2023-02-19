@@ -50,6 +50,8 @@ app.prepare().then(() => {
       {
         store: sessionStore,
         sameSite: 'none',
+        rolling: true,
+        renew: true,
         secure: true,
         proxy: true,
       },
@@ -90,7 +92,7 @@ app.prepare().then(() => {
   const clientSecret = process.env.SHOPIFY_API_SECRET;
 
   //installation path
-  router.get('/install', async (ctx) => {
+  router.get('/install', async (ctx, next) => {
     const shop = ctx.query.shop;
     const state = CryptoJS.lib.WordArray.random(128 / 8).toString(
       CryptoJS.enc.Hex
@@ -102,10 +104,11 @@ app.prepare().then(() => {
 
     const installUrl = `https://${shop}/admin/oauth/authorize?client_id=${clientId}&scope=write_customers,read_customers&redirect_uri=${redirectUri}&state=${state}`;
     ctx.redirect(installUrl);
+    await next();
   });
 
   //install auth path
-  router.get('/auth/callback', async (ctx) => {
+  router.get('/auth/callback', async (ctx, next) => {
     const { code, shop, state } = ctx.query;
     console.log('auth', ctx.session);
     if (state !== (await ctx.session.state)) {
@@ -140,6 +143,7 @@ app.prepare().then(() => {
     console.log("aat", ctx.session)
     // Redirect the user to the appropriate page
     ctx.redirect( 'https://member.vsyndicate.com/unregistered-cards') 
+    await next();
   });
 
   //get all unregistered cards
