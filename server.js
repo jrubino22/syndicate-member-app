@@ -19,13 +19,6 @@ const CryptoJS = require('crypto-js');
 
 dotenv.config();
 
-const allowedOrigins = [
-  'https://wholesale.vsyndicate.com/',
-  'https://admin.shopify.com/store/wholesale-vsyndicate/',
-  'https://member.vsyndicate.com',
-  'https://wholesale-vsyndicate.myshopify.com'
-];
-
 mongoose.connect(process.env.MONGO_URL, () => {
   console.log('Connected to Mongo DB');
 });
@@ -54,6 +47,7 @@ app.prepare().then(() => {
       return false;
     },
     credentials: true,
+    exposeHeaders: ['access-control-allow-credentials'],
   }));
 
   server.keys = ['fdsgshse'];
