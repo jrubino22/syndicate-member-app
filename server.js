@@ -39,7 +39,7 @@ app.prepare().then(() => {
 
   server.use(cors({
     origin: (ctx) => {
-      const allowedOrigins = ['https://wholesale.vsyndicate.com', '/^https:\/\/member.vsyndicate\.com\/.*/', '/^https:\/\/wholesale-vsyndicate.myshopify\.com\/.*/'];
+      const allowedOrigins = ['https://wholesale.vsyndicate.com', 'https://wholesale-vsyndicate.myshopify.com', '/^https:\/\/member.vsyndicate\.com\/.*/', '/^https:\/\/wholesale-vsyndicate.myshopify\.com\/.*/'];
       const origin = ctx.headers.origin;
       if (allowedOrigins.includes(origin)) {
         return origin;
