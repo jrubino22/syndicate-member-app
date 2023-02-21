@@ -89,7 +89,7 @@ const Index = ({ member, error }) => {
   );
 };
 
-export async function getServerSideProps(context) {
+export async function getServerSideProps({req}) {
   try {
     const response = await fetch('https://member.vsyndicate.com/api/members',
     {
