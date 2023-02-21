@@ -256,95 +256,178 @@ app.prepare().then(() => {
   });
 
   // register new membership
-  router.post('/api/register/:memberId', bodyParser(), async (ctx) => {
-    const idPrefix = ctx.params.memberId.substring(0, 4);
-    const idNumberMatch = await unregisteredIdModel.find({
-      memberId: ctx.params.memberId,
-    });
-    let tier = '';
-    if (idNumberMatch.length > 0) {
-      try {
-        unregisteredIdModel.findOneAndDelete(
-          { memberId: ctx.params.memberId },
-          function (err, docs) {
-            if (err) {
-              console.log(err);
-            } else {
-              console.log('Deleted Unregistered ID number : ', docs);
-            }
-          }
-        );
-        if (idPrefix === '1658') {
-          tier = 'Red';
-        } else if (idPrefix === '2409') {
-          tier = 'Blue';
-        } else if (idPrefix === '3945') {
-          tier = 'Gold';
-        } else if (idPrefix === '4679') {
-          tier = 'Black';
-        } else {
-          console.error();
-        }
-
-        // let thisUrl = `https://${process.env.SHOPIFY_STORE}.myshopify.com/admin/api/2022-07/customers/${ctx.request.body.shopifyCustomerId}.json`;
-
-        getResponse = await fetch(thisUrl, {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Shopify-Access-Token': process.env.ACCESS_TOKEN,
-          },
-        });
-
-        const getData = await getResponse.json();
-        console.log(getData.customer.tags);
-        const newCustomerTags = getData.customer.tags.concat(`,${tier}`);
-        console.log(newCustomerTags);
-
-        const requestOptions = {
-          method: 'PUT',
-          headers: {
-            'Content-Type': 'application/json',
-            'X-Shopify-Access-Token': process.env.ACCESS_TOKEN,
-          },
-          body: JSON.stringify({
-            customer: {
-              id: ctx.request.body.shopifyCustomerId,
-              tags: newCustomerTags,
-            },
-          }),
-        };
-        const response = await fetch(thisUrl, requestOptions);
-        const data = await response.json();
-        console.log(data);
-
-        const newId = await registeredIdModel.create({
-          customerEmail: ctx.request.body.customerEmail,
-          shopifyCustomerId: ctx.request.body.shopifyCustomerId,
-          cardTier: tier,
-          accountNumber: ctx.params.memberId,
-        });
-        console.log(newId);
-        ctx.body = JSON.stringify(newId);
-        google_cal
-          .insertEvent(ctx.request.body.customerEmail)
-          .then((res) => {
-            console.log(res);
-          })
-          .catch((err) => {
-            console.log(err);
-          });
-      } catch (err) {
-        error.message = 'Invalid account number';
-        console.log(error.message);
-      }
-    } else
-      try {
-        error.message = 'Invalid account number';
-      } catch (err) {
-        console.log(error);
-      }
+  // register new membership
+router.post('/api/register/:memberId', bodyParser(), async (ctx) => {
+  const idPrefix = ctx.params.memberId.substring(0, 4);
+  const idNumberMatch = await unregisteredIdModel.find({
+    memberId: ctx.params.memberId,
   });
+  let tier = '';
+  if (idNumberMatch.length > 0) {
+    try {
+      if (idPrefix === '1658') {
+        tier = 'Red';
+      } else if (idPrefix === '2409') {
+        tier = 'Blue';
+      } else if (idPrefix === '3945') {
+        tier = 'Gold';
+      } else if (idPrefix === '4679') {
+        tier = 'Black';
+      } else {
+        throw new Error('Invalid account number');
+      }
+
+      let thisUrl = `https://${process.env.SHOPIFY_STORE}.myshopify.com/admin/api/2022-07/customers/${ctx.request.body.shopifyCustomerId}.json`;
+
+      const getResponse = await fetch(thisUrl, {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Shopify-Access-Token': process.env.ACCESS_TOKEN,
+        },
+      });
+
+      const getData = await getResponse.json();
+      console.log(getData.customer.tags);
+      const newCustomerTags = getData.customer.tags.concat(`,${tier}`);
+      console.log(newCustomerTags);
+
+      const requestOptions = {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-Shopify-Access-Token': process.env.ACCESS_TOKEN,
+        },
+        body: JSON.stringify({
+          customer: {
+            id: ctx.request.body.shopifyCustomerId,
+            tags: newCustomerTags,
+          },
+        }),
+      };
+      const response = await fetch(thisUrl, requestOptions);
+      const data = await response.json();
+      console.log(data);
+
+      const newId = await registeredIdModel.create({
+        customerEmail: ctx.request.body.customerEmail,
+        shopifyCustomerId: ctx.request.body.shopifyCustomerId,
+        cardTier: tier,
+        accountNumber: ctx.params.memberId,
+      });
+      console.log(newId);
+      ctx.body = JSON.stringify(newId);
+      google_cal
+        .insertEvent(ctx.request.body.customerEmail)
+        .then((res) => {
+          console.log(res);
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+
+      // Delete the unregistered ID number after successful execution of the function
+      await unregisteredIdModel.findOneAndDelete({ memberId: ctx.params.memberId });
+      console.log('Deleted Unregistered ID number');
+    } catch (err) {
+      console.log(err.message);
+      ctx.throw(400, err.message);
+    }
+  } else {
+    const error = new Error('Invalid account number');
+    console.log(error.message);
+    ctx.throw(400, error.message);
+  }
+});
+  // router.post('/api/register/:memberId', bodyParser(), async (ctx) => {
+  //   const idPrefix = ctx.params.memberId.substring(0, 4);
+  //   const idNumberMatch = await unregisteredIdModel.find({
+  //     memberId: ctx.params.memberId,
+  //   });
+  //   let tier = '';
+  //   if (idNumberMatch.length > 0) {
+  //     try {
+  //       unregisteredIdModel.findOneAndDelete(
+  //         { memberId: ctx.params.memberId },
+  //         function (err, docs) {
+  //           if (err) {
+  //             console.log(err);
+  //           } else {
+  //             console.log('Deleted Unregistered ID number : ', docs);
+  //           }
+  //         }
+  //       );
+  //       if (idPrefix === '1658') {
+  //         tier = 'Red';
+  //       } else if (idPrefix === '2409') {
+  //         tier = 'Blue';
+  //       } else if (idPrefix === '3945') {
+  //         tier = 'Gold';
+  //       } else if (idPrefix === '4679') {
+  //         tier = 'Black';
+  //       } else {
+  //         console.error();
+  //       }
+
+  //       let thisUrl = `https://${process.env.SHOPIFY_STORE}.myshopify.com/admin/api/2022-07/customers/${ctx.request.body.shopifyCustomerId}.json`;
+
+  //       const getResponse = await fetch(thisUrl, {
+  //         method: 'GET',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           'X-Shopify-Access-Token': process.env.ACCESS_TOKEN,
+  //         },
+  //       });
+
+  //       const getData = await getResponse.json();
+  //       console.log(getData.customer.tags);
+  //       const newCustomerTags = getData.customer.tags.concat(`,${tier}`);
+  //       console.log(newCustomerTags);
+
+  //       const requestOptions = {
+  //         method: 'PUT',
+  //         headers: {
+  //           'Content-Type': 'application/json',
+  //           'X-Shopify-Access-Token': process.env.ACCESS_TOKEN,
+  //         },
+  //         body: JSON.stringify({
+  //           customer: {
+  //             id: ctx.request.body.shopifyCustomerId,
+  //             tags: newCustomerTags,
+  //           },
+  //         }),
+  //       };
+  //       const response = await fetch(thisUrl, requestOptions);
+  //       const data = await response.json();
+  //       console.log(data);
+
+  //       const newId = await registeredIdModel.create({
+  //         customerEmail: ctx.request.body.customerEmail,
+  //         shopifyCustomerId: ctx.request.body.shopifyCustomerId,
+  //         cardTier: tier,
+  //         accountNumber: ctx.params.memberId,
+  //       });
+  //       console.log(newId);
+  //       ctx.body = JSON.stringify(newId);
+  //       google_cal
+  //         .insertEvent(ctx.request.body.customerEmail)
+  //         .then((res) => {
+  //           console.log(res);
+  //         })
+  //         .catch((err) => {
+  //           console.log(err);
+  //         });
+  //     } catch (err) {
+  //       error.message = 'Invalid account number';
+  //       console.log(error.message);
+  //     }
+  //   } else
+  //     try {
+  //       error.message = 'Invalid account number';
+  //     } catch (err) {
+  //       console.log(error);
+  //     }
+  // });
 
   // post a new unregistered Id
   router.post('/api/memberId', bodyParser(), async (ctx) => {
