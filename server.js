@@ -22,7 +22,8 @@ dotenv.config();
 const allowedOrigins = [
   'https://wholesale.vsyndicate.com/',
   'https://admin.shopify.com/store/wholesale-vsyndicate/',
-  'https://member.vsyndicate.com'
+  'https://member.vsyndicate.com',
+  'https://wholesale-vsyndicate.myshopify.com'
 ];
 
 mongoose.connect(process.env.MONGO_URL, () => {
@@ -43,6 +44,17 @@ const sessionStore = new MongooseStore({
 app.prepare().then(() => {
   const server = new Koa({proxy: true});
 
+  server.use(cors({
+    origin: (ctx) => {
+      const allowedOrigins = ['https://wholesale.vsyndicate.com', '/^https:\/\/member.vsyndicate\.com\/.*/', '/^https:\/\/wholesale-vsyndicate.myshopify\.com\/.*/'];
+      const origin = ctx.headers.origin;
+      if (allowedOrigins.includes(origin)) {
+        return origin;
+      }
+      return false;
+    },
+    credentials: true,
+  }));
 
   server.keys = ['fdsgshse'];
   server.use(
@@ -70,20 +82,7 @@ app.prepare().then(() => {
     ctx.res.statusCode = 200;
   };
 
-  // server.use(
-  //   cors({
-  //     origin: function (origin, callback) {
-  //       // if (!origin) return callback(null, true);
-  //       if (allowedOrigins.indexOf(origin) === -1) {
-  //         var msg =
-  //           'The CORS policy for this site does not ' +
-  //           'allow access from the specified Origin.';
-  //         return callback(new Error(msg), false);
-  //       }
-  //       return callback(null, true);
-  //     },
-  //   })
-  // );
+
 
   router.get('(/_next/static/.*)', handleRequest);
   router.get('/_next/webpack-hmr', handleRequest);
