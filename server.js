@@ -141,7 +141,7 @@ app.prepare().then(() => {
     ctx.session.accessToken = accessToken;
     console.log("aat", ctx.session)
     // Redirect the user to the appropriate page
-    ctx.redirect( 'https://member.vsyndicate.com/unregistered-cards') 
+    ctx.redirect( 'https://member.vsyndicate.com') 
     console.log("after redirect", ctx.session)
   });
 
