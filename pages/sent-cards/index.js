@@ -89,10 +89,10 @@ export async function getServerSideProps() {
     'https://member.vsyndicate.com/api/unregistered'
   );
   const data = await response.json();
-
+  const card = Array.isArray(data) ? data : [data]; // transform data into an array
   return {
     props: {
-      card: data,
+      card
     },
   };
 }
