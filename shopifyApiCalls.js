@@ -133,7 +133,7 @@ const addMemberTag = async (shopifyStore, customerEmail) => {
 if (response.ok) {
   const { customers } = await response.json();
   const customer = customers[0];
-  console.log(customer);
+  console.log("customer",customer);
 
   const tags = customer.tags ? customer.tags.split(', ') : [];
   tags.push('member');

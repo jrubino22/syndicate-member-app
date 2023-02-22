@@ -174,7 +174,8 @@ app.prepare().then(() => {
       sentTo: email
     };
     try {
-      shopifyApiCalls.addMemberTag(
+      console.log('step1', email)
+      await shopifyApiCalls.addMemberTag(
         process.env.SHOPIFY_STORE,
         email
       );
