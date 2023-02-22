@@ -262,7 +262,6 @@ app.prepare().then(() => {
   });
 
   // register new membership
-  // register new membership
 router.post('/api/register/:memberId', bodyParser(), async (ctx) => {
   const idPrefix = ctx.params.memberId.substring(0, 4);
   const idNumberMatch = await unregisteredIdModel.find({

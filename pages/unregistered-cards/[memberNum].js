@@ -74,7 +74,7 @@ const SendCard = ({ card }) => {
         <form className="memberForm" onSubmit={() => handleFormSubmit()}>
           <br></br>
           <label>
-            Customer Email Address: <br></br>
+            Customer Email Address: {' '}
             <input
               type="text"
               required
