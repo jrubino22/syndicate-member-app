@@ -122,7 +122,7 @@ const replaceCustomerTags = async (
 
 const addMemberTag = async (shopifyStore, customerEmail) => {
   const url=`https://${shopifyStore}.myshopify.com$/admin/api/2022-07/customers.json?email=${customerEmail}`
-
+  console.log('inside MemberTag', url)
   const response = await fetch(url, {
     headers: {
       'Content-type': 'application/json',
@@ -138,7 +138,7 @@ if (response.ok) {
   const tags = customer.tags ? customer.tags.split(', ') : [];
   tags.push('member');
 
-  const putUrl = `https://${shopName}.myshopify.com/admin/api/2022-07/customers/${customer.id}.json`;
+  const putUrl = `https://${shopifyStore}.myshopify.com/admin/api/2022-07/customers/${customer.id}.json`;
   const putResponse = await fetch(putUrl, {
     method: 'PUT',
     headers: {
