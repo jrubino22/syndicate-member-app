@@ -12,23 +12,24 @@ const SendCard = ({ card }) => {
   };
 
   async function handleFormSubmit() {
-    const thisUrl = `https://member.vsyndicate.com/api/send/${urlParam}`;
+    const thisUrl = `https://member.vsyndicate.com/api/send/${card[0].memberId}`;
     if (!window.confirm('Mark card sent?')) {
       return;
     }
+  
+    // Remove spaces from the sentTo string
+    const cleanSentTo = sentTo.replace(/\s/g, '');
+  
     try {
       console.log(thisUrl);
-      await postFormDataAsJson({ thisUrl });
-      // alert('changes have been saved')
+      await postFormDataAsJson({ thisUrl, sentTo: cleanSentTo });
     } catch (error) {
       console.log(error);
     }
   }
-
-  async function postFormDataAsJson() {
-    const formDataJsonString = JSON.stringify({
-      sentTo: sentTo,
-    });
+  
+  async function postFormDataAsJson({ thisUrl, sentTo }) {
+    const formDataJsonString = JSON.stringify({ sentTo });
     const fetchOptions = {
       method: 'PUT',
       headers: {
@@ -40,10 +41,10 @@ const SendCard = ({ card }) => {
       body: formDataJsonString,
     };
     const response = await fetch(
-      `https://member.vsyndicate.com/api/send/${card[0].memberId}`,
+      thisUrl,
       fetchOptions
     );
-
+  
     if (!response.ok) {
       console.log('error in fetch');
       const errorMessage = await response.text();
@@ -52,6 +53,7 @@ const SendCard = ({ card }) => {
     alert('your changes have been saved');
     return response.json();
   }
+
   return card.map(({ memberId, sent }) => (
     <>
       <Link href={`/unregistered-cards`}>
@@ -72,14 +74,15 @@ const SendCard = ({ card }) => {
         <form className="memberForm" onSubmit={() => handleFormSubmit()}>
           <br></br>
           <label>
-            Sent To: <br></br>
-            <textarea
+            Customer Email Address: <br></br>
+            <input
+              type="text"
               required
               name="sentTo"
               className="sendTa"
               value={sentTo}
               onChange={handleSentTo}
-            ></textarea>
+            ></input>
           </label>
           <input type="submit" value="Mark Card Sent"></input>
         </form>

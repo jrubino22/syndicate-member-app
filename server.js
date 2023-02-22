@@ -168,11 +168,16 @@ app.prepare().then(() => {
   });
   //Mark Card Sent
   router.put('/api/send/:memberId', bodyParser(), async (ctx) => {
+    const email = ctx.request.body.sentTo
     const update = {
       sent: true,
-      sentTo: ctx.request.body.sentTo,
+      sentTo: email
     };
     try {
+      shopifyApiCalls.addMemberTag(
+        process.env.SHOPIFY_STORE,
+        email
+      );
       const updatedId = await unregisteredIdModel.findOneAndUpdate(
         { memberId: ctx.params.memberId },
         update

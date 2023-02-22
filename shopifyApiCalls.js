@@ -8,7 +8,7 @@ const replaceCustomerTags = async (
 ) => {
   let thisUrl = `https://${shopifyStore}.myshopify.com/admin/api/2022-07/customers/${shopifyCustomerId}.json`;
 
-  getResponse = await fetch(thisUrl, {
+  const getResponse = await fetch(thisUrl, {
     method: 'GET',
     headers: {
       'Content-Type': 'application/json',
@@ -120,4 +120,46 @@ const replaceCustomerTags = async (
   console.log(data);
 };
 
-module.exports = { replaceCustomerTags };
+const addMemberTag = async (shopifyStore, customerEmail) => {
+  const url=`https://${shopifyStore}.myshopify.com$/admin/api/2022-07/customers.json?email=${customerEmail}`
+
+  const getResponse = await fetch(url, {
+    headers: {
+      'Content-type': 'application/json',
+      'X-Shopify-Access-Token': process.env.ACCESS_TOKEN,
+    }
+  });
+  
+if (response.ok) {
+  const { customers } = await response.json();
+  const customer = customers[0];
+  console.log(customer);
+
+  const tags = customer.tags ? customer.tags.split(', ') : [];
+  tags.push('member');
+
+  const putUrl = `https://${shopName}.myshopify.com/admin/api/2022-07/customers/${customer.id}.json`;
+  const putResponse = await fetch(putUrl, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-Shopify-Access-Token': process.env.ACCESS_TOKEN
+    },
+    body: JSON.stringify({
+      customer: {
+        id: customer.id,
+        tags: tags.join(', ')
+      }
+    })
+  });
+  if (putResponse.ok) {
+    console.log('Customer tags updated successfully');
+  } else {
+    console.error('Failed to update customer tags:', putResponse.status, putResponse.statusText);
+  }
+} else {
+  console.error('Failed to retrieve customer:', response.status, response.statusText);
+}
+}
+
+module.exports = { replaceCustomerTags, addMemberTag };
