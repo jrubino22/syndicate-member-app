@@ -37,6 +37,8 @@
 
 .notesTa {
     margin-bottom: 30px;
+    height: 600px;
+    width: 500px;
 }
 
 .tierSelect {
@@ -88,8 +90,6 @@
 }
 
 .sendTa{
-    height: 50px;
-    width: 500px;
     margin-bottom: 30px;
 }
 
