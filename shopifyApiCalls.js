@@ -123,7 +123,7 @@ const replaceCustomerTags = async (
 const addMemberTag = async (shopifyStore, customerEmail) => {
   const url=`https://${shopifyStore}.myshopify.com$/admin/api/2022-07/customers.json?email=${customerEmail}`
 
-  const getResponse = await fetch(url, {
+  const response = await fetch(url, {
     headers: {
       'Content-type': 'application/json',
       'X-Shopify-Access-Token': process.env.ACCESS_TOKEN,
