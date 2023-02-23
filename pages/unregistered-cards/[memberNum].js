@@ -51,6 +51,7 @@ const SendCard = ({ card }) => {
       throw new Error(errorMessage);
     }
     alert('your changes have been saved');
+    setSentTo(card[0].sentTo);
     return response.json();
   }
 
@@ -71,7 +72,7 @@ const SendCard = ({ card }) => {
       </div>
       <div key="form" className="formDiv">
         <h3>Send Card</h3>
-        <form className="memberForm" onSubmit={() => handleFormSubmit()}>
+        <form className="memberForm" onSubmit={handleFormSubmit}>
           <br></br>
           <label>
             Customer Email Address: {' '}
