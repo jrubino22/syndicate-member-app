@@ -175,18 +175,18 @@ app.prepare().then(() => {
     };
     try {
       console.log('step1', email)
-      await shopifyApiCalls.addMemberTag(
-        process.env.SHOPIFY_STORE,
-        email
-      );
       const updatedId = await unregisteredIdModel.findOneAndUpdate(
         { memberId: ctx.params.memberId },
         update
       );
       console.log(updatedId);
       ctx.body = JSON.stringify(updatedId);
+      await shopifyApiCalls.addMemberTag(
+        process.env.SHOPIFY_STORE,
+        email
+      );
     } catch (err) {
-      console.log(err.name);
+      console.log("server", err.name);
     }
   });
 
